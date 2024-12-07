@@ -1,0 +1,832 @@
+/Users/akashshrivastva/PycharmProjects/LLM-CrossWord-Generator/.venv/bin/python /Users/akashshrivastva/PycharmProjects/LLM-CrossWord-Generator/generator_claude.py
+/Users/akashshrivastva/PycharmProjects/LLM-CrossWord-Generator/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+['bravo', 'air']
+**************************************************
+/Users/akashshrivastva/PycharmProjects/LLM-CrossWord-Generator/generator_claude.py:41: LangChainDeprecationWarning: The method `BaseChatModel.__call__` was deprecated in langchain-core 0.1.7 and will be removed in 1.0. Use :meth:`~invoke` instead.
+  response1 = llm(messages=chat_prompt.format_messages(char_positions=char_positions, words=words))
+Attempting to generate a new word
+{
+    "word": "guilt",
+    "row": 6,
+    "column": 1,
+    "isAcross": false,
+    "clue": "A feeling of responsibility for wrongdoing",
+    "positions": "(g, 6, 1), (u, 7, 1), (i, 8, 1), (l, 9, 1), (t, 10, 1)"
+}
+**************************************************
+Extracting new word from response
+{'word': 'guilt', 'row': 6, 'column': 1, 'isAcross': False, 'clue': 'A feeling of responsibility for wrongdoing', 'positions': '(g, 6, 1), (u, 7, 1), (i, 8, 1), (l, 9, 1), (t, 10, 1)'}
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 1, 'character': 'g'}
+{'row': 7, 'column': 1, 'character': 'u'}
+{'row': 8, 'column': 1, 'character': 'i'}
+{'row': 9, 'column': 1, 'character': 'l'}
+{'row': 10, 'column': 1, 'character': 't'}
+['bravo', 'air', 'guilt']
+**************************************************
+Performing validation step
+VALIDATION FAILURE: {'word': 'guilt', 'row': 6, 'column': 1, 'isAcross': False, 'clue': 'A feeling of responsibility for wrongdoing', 'positions': '(g, 6, 1), (u, 7, 1), (i, 8, 1), (l, 9, 1), (t, 10, 1)'}; Retrying with another word
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+['bravo', 'air']
+**************************************************
+Attempting to generate a new word
+{
+    "word": "camel",
+    "row": 4,
+    "column": 3,
+    "isAcross": true,
+    "clue": "Desert animal with a humpy back",
+    "positions": "(c, 4, 3), (a, 4, 4), (m, 4, 5), (e, 4, 6), (l, 4, 7)"
+}
+**************************************************
+Extracting new word from response
+{'word': 'camel', 'row': 4, 'column': 3, 'isAcross': True, 'clue': 'Desert animal with a humpy back', 'positions': '(c, 4, 3), (a, 4, 4), (m, 4, 5), (e, 4, 6), (l, 4, 7)'}
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+['bravo', 'air', 'camel']
+**************************************************
+Performing validation step
+VALIDATION SUCCESS: {'word': 'camel', 'row': 4, 'column': 3, 'isAcross': True, 'clue': 'Desert animal with a humpy back', 'positions': '(c, 4, 3), (a, 4, 4), (m, 4, 5), (e, 4, 6), (l, 4, 7)'}
+SUCCESS: new word added is {'word': 'camel', 'row': 4, 'column': 3, 'isAcross': True, 'clue': 'Desert animal with a humpy back', 'positions': '(c, 4, 3), (a, 4, 4), (m, 4, 5), (e, 4, 6), (l, 4, 7)'}
+New word count: 1
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+['bravo', 'air', 'camel']
+**************************************************
+Attempting to generate a new word
+{
+    "word": "wail",
+    "row": 2,
+    "column": 6,
+    "isAcross": false,
+    "clue": "A prolonged cry of grief or anguish",
+    "positions": "(w, 2, 6), (a, 3, 6), (i, 4, 6), (l, 5, 6)"
+}
+**************************************************
+Extracting new word from response
+{'word': 'wail', 'row': 2, 'column': 6, 'isAcross': False, 'clue': 'A prolonged cry of grief or anguish', 'positions': '(w, 2, 6), (a, 3, 6), (i, 4, 6), (l, 5, 6)'}
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 2, 'column': 6, 'character': 'w'}
+{'row': 3, 'column': 6, 'character': 'a'}
+{'row': 4, 'column': 6, 'character': 'i'}
+{'row': 5, 'column': 6, 'character': 'l'}
+['bravo', 'air', 'camel', 'wail']
+**************************************************
+Performing validation step
+VALIDATION FAILURE: {'word': 'wail', 'row': 2, 'column': 6, 'isAcross': False, 'clue': 'A prolonged cry of grief or anguish', 'positions': '(w, 2, 6), (a, 3, 6), (i, 4, 6), (l, 5, 6)'}; Retrying with another word
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+['bravo', 'air', 'camel']
+**************************************************
+Attempting to generate a new word
+{
+    "word": "scope",
+    "row": 6,
+    "column": 2,
+    "isAcross": false,
+    "clue": "An instrument used to observe distant objects",
+    "positions": "(s, 6, 2), (c, 7, 2), (o, 8, 2), (p, 9, 2), (e, 10, 2)"
+}
+**************************************************
+Extracting new word from response
+{'word': 'scope', 'row': 6, 'column': 2, 'isAcross': False, 'clue': 'An instrument used to observe distant objects', 'positions': '(s, 6, 2), (c, 7, 2), (o, 8, 2), (p, 9, 2), (e, 10, 2)'}
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 6, 'column': 2, 'character': 's'}
+{'row': 7, 'column': 2, 'character': 'c'}
+{'row': 8, 'column': 2, 'character': 'o'}
+{'row': 9, 'column': 2, 'character': 'p'}
+{'row': 10, 'column': 2, 'character': 'e'}
+['bravo', 'air', 'camel', 'scope']
+**************************************************
+Performing validation step
+VALIDATION FAILURE: {'word': 'scope', 'row': 6, 'column': 2, 'isAcross': False, 'clue': 'An instrument used to observe distant objects', 'positions': '(s, 6, 2), (c, 7, 2), (o, 8, 2), (p, 9, 2), (e, 10, 2)'}; Retrying with another word
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+['bravo', 'air', 'camel']
+**************************************************
+Attempting to generate a new word
+{
+    "word": "tango",
+    "row": 7,
+    "column": 0,
+    "isAcross": true,
+    "clue": "A lively Latin dance",
+    "positions": "(t, 7, 0), (a, 7, 1), (n, 7, 2), (g, 7, 3), (o, 7, 4)"
+}
+**************************************************
+Extracting new word from response
+{'word': 'tango', 'row': 7, 'column': 0, 'isAcross': True, 'clue': 'A lively Latin dance', 'positions': '(t, 7, 0), (a, 7, 1), (n, 7, 2), (g, 7, 3), (o, 7, 4)'}
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+['bravo', 'air', 'camel', 'tango']
+**************************************************
+Performing validation step
+VALIDATION SUCCESS: {'word': 'tango', 'row': 7, 'column': 0, 'isAcross': True, 'clue': 'A lively Latin dance', 'positions': '(t, 7, 0), (a, 7, 1), (n, 7, 2), (g, 7, 3), (o, 7, 4)'}
+SUCCESS: new word added is {'word': 'tango', 'row': 7, 'column': 0, 'isAcross': True, 'clue': 'A lively Latin dance', 'positions': '(t, 7, 0), (a, 7, 1), (n, 7, 2), (g, 7, 3), (o, 7, 4)'}
+New word count: 2
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+['bravo', 'air', 'camel', 'tango']
+**************************************************
+Attempting to generate a new word
+{
+    "word": "parrot",
+    "row": 6,
+    "column": 1,
+    "isAcross": true,
+    "clue": "A colorful tropical bird that can mimic speech.",
+    "positions": "(p, 6, 1), (a, 6, 2), (r, 6, 3), (r, 6, 4), (o, 6, 5), (t, 6, 6)"
+}
+**************************************************
+Extracting new word from response
+{'word': 'parrot', 'row': 6, 'column': 1, 'isAcross': True, 'clue': 'A colorful tropical bird that can mimic speech.', 'positions': '(p, 6, 1), (a, 6, 2), (r, 6, 3), (r, 6, 4), (o, 6, 5), (t, 6, 6)'}
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+['bravo', 'air', 'camel', 'tango', 'parrot']
+**************************************************
+Performing validation step
+VALIDATION SUCCESS: {'word': 'parrot', 'row': 6, 'column': 1, 'isAcross': True, 'clue': 'A colorful tropical bird that can mimic speech.', 'positions': '(p, 6, 1), (a, 6, 2), (r, 6, 3), (r, 6, 4), (o, 6, 5), (t, 6, 6)'}
+SUCCESS: new word added is {'word': 'parrot', 'row': 6, 'column': 1, 'isAcross': True, 'clue': 'A colorful tropical bird that can mimic speech.', 'positions': '(p, 6, 1), (a, 6, 2), (r, 6, 3), (r, 6, 4), (o, 6, 5), (t, 6, 6)'}
+New word count: 3
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+['bravo', 'air', 'camel', 'tango', 'parrot']
+**************************************************
+Attempting to generate a new word
+{
+    "word": "quail",
+    "row": 3,
+    "column": 5,
+    "isAcross": false,
+    "clue": "A small, plump game bird",
+    "positions": "(q, 3, 5), (u, 4, 5), (a, 5, 5), (i, 6, 5), (l, 7, 5)"
+}
+**************************************************
+Extracting new word from response
+{'word': 'quail', 'row': 3, 'column': 5, 'isAcross': False, 'clue': 'A small, plump game bird', 'positions': '(q, 3, 5), (u, 4, 5), (a, 5, 5), (i, 6, 5), (l, 7, 5)'}
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+{'row': 3, 'column': 5, 'character': 'q'}
+{'row': 4, 'column': 5, 'character': 'u'}
+{'row': 5, 'column': 5, 'character': 'a'}
+{'row': 6, 'column': 5, 'character': 'i'}
+{'row': 7, 'column': 5, 'character': 'l'}
+['bravo', 'air', 'camel', 'tango', 'parrot', 'quail']
+**************************************************
+Performing validation step
+VALIDATION FAILURE: {'word': 'quail', 'row': 3, 'column': 5, 'isAcross': False, 'clue': 'A small, plump game bird', 'positions': '(q, 3, 5), (u, 4, 5), (a, 5, 5), (i, 6, 5), (l, 7, 5)'}; Retrying with another word
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+['bravo', 'air', 'camel', 'tango', 'parrot']
+**************************************************
+Attempting to generate a new word
+{
+    "word": "foxtrot",
+    "row": 7,
+    "column": 5,
+    "isAcross": true,
+    "clue": "A lively dance step in ragtime music",
+    "positions": "(f, 7, 5), (o, 7, 6), (x, 7, 7), (t, 7, 8), (r, 7, 9), (o, 8, 9), (t, 9, 9)"
+}
+**************************************************
+Extracting new word from response
+{'word': 'foxtrot', 'row': 7, 'column': 5, 'isAcross': True, 'clue': 'A lively dance step in ragtime music', 'positions': '(f, 7, 5), (o, 7, 6), (x, 7, 7), (t, 7, 8), (r, 7, 9), (o, 8, 9), (t, 9, 9)'}
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+{'row': 7, 'column': 5, 'character': 'f'}
+{'row': 7, 'column': 6, 'character': 'o'}
+{'row': 7, 'column': 7, 'character': 'x'}
+{'row': 7, 'column': 8, 'character': 't'}
+{'row': 7, 'column': 9, 'character': 'r'}
+{'row': 8, 'column': 9, 'character': 'o'}
+{'row': 9, 'column': 9, 'character': 't'}
+['bravo', 'air', 'camel', 'tango', 'parrot', 'foxtrot']
+**************************************************
+Performing validation step
+VALIDATION SUCCESS: {'word': 'foxtrot', 'row': 7, 'column': 5, 'isAcross': True, 'clue': 'A lively dance step in ragtime music', 'positions': '(f, 7, 5), (o, 7, 6), (x, 7, 7), (t, 7, 8), (r, 7, 9), (o, 8, 9), (t, 9, 9)'}
+SUCCESS: new word added is {'word': 'foxtrot', 'row': 7, 'column': 5, 'isAcross': True, 'clue': 'A lively dance step in ragtime music', 'positions': '(f, 7, 5), (o, 7, 6), (x, 7, 7), (t, 7, 8), (r, 7, 9), (o, 8, 9), (t, 9, 9)'}
+New word count: 4
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+{'row': 7, 'column': 5, 'character': 'f'}
+{'row': 7, 'column': 6, 'character': 'o'}
+{'row': 7, 'column': 7, 'character': 'x'}
+{'row': 7, 'column': 8, 'character': 't'}
+{'row': 7, 'column': 9, 'character': 'r'}
+{'row': 8, 'column': 9, 'character': 'o'}
+{'row': 9, 'column': 9, 'character': 't'}
+['bravo', 'air', 'camel', 'tango', 'parrot', 'foxtrot']
+**************************************************
+Attempting to generate a new word
+{
+    "word": "pious",
+    "row": 0,
+    "column": 0,
+    "isAcross": true,
+    "clue": "Devoutly religious",
+    "positions": "(p, 0, 0), (i, 0, 1), (o, 0, 2), (u, 0, 3), (s, 0, 4)"
+}
+**************************************************
+Extracting new word from response
+{'word': 'pious', 'row': 0, 'column': 0, 'isAcross': True, 'clue': 'Devoutly religious', 'positions': '(p, 0, 0), (i, 0, 1), (o, 0, 2), (u, 0, 3), (s, 0, 4)'}
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+{'row': 7, 'column': 5, 'character': 'f'}
+{'row': 7, 'column': 6, 'character': 'o'}
+{'row': 7, 'column': 7, 'character': 'x'}
+{'row': 7, 'column': 8, 'character': 't'}
+{'row': 7, 'column': 9, 'character': 'r'}
+{'row': 8, 'column': 9, 'character': 'o'}
+{'row': 9, 'column': 9, 'character': 't'}
+{'row': 0, 'column': 0, 'character': 'p'}
+{'row': 0, 'column': 1, 'character': 'i'}
+{'row': 0, 'column': 2, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'u'}
+{'row': 0, 'column': 4, 'character': 's'}
+['bravo', 'air', 'camel', 'tango', 'parrot', 'foxtrot', 'pious']
+**************************************************
+Performing validation step
+VALIDATION FAILURE: {'word': 'pious', 'row': 0, 'column': 0, 'isAcross': True, 'clue': 'Devoutly religious', 'positions': '(p, 0, 0), (i, 0, 1), (o, 0, 2), (u, 0, 3), (s, 0, 4)'}; Retrying with another word
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+{'row': 7, 'column': 5, 'character': 'f'}
+{'row': 7, 'column': 6, 'character': 'o'}
+{'row': 7, 'column': 7, 'character': 'x'}
+{'row': 7, 'column': 8, 'character': 't'}
+{'row': 7, 'column': 9, 'character': 'r'}
+{'row': 8, 'column': 9, 'character': 'o'}
+{'row': 9, 'column': 9, 'character': 't'}
+['bravo', 'air', 'camel', 'tango', 'parrot', 'foxtrot']
+**************************************************
+Attempting to generate a new word
+{
+    "word": "sloth",
+    "row": 4,
+    "column": 8,
+    "isAcross": true,
+    "clue": "A slow-moving tree-dwelling mammal",
+    "positions": "(s, 4, 8), (l, 4, 9), (o, 5, 8), (t, 6, 8), (h, 7, 8)"
+}
+**************************************************
+Extracting new word from response
+{'word': 'sloth', 'row': 4, 'column': 8, 'isAcross': True, 'clue': 'A slow-moving tree-dwelling mammal', 'positions': '(s, 4, 8), (l, 4, 9), (o, 5, 8), (t, 6, 8), (h, 7, 8)'}
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+{'row': 7, 'column': 5, 'character': 'f'}
+{'row': 7, 'column': 6, 'character': 'o'}
+{'row': 7, 'column': 7, 'character': 'x'}
+{'row': 7, 'column': 8, 'character': 't'}
+{'row': 7, 'column': 9, 'character': 'r'}
+{'row': 8, 'column': 9, 'character': 'o'}
+{'row': 9, 'column': 9, 'character': 't'}
+{'row': 4, 'column': 8, 'character': 's'}
+{'row': 4, 'column': 9, 'character': 'l'}
+{'row': 5, 'column': 8, 'character': 'o'}
+{'row': 6, 'column': 8, 'character': 't'}
+{'row': 7, 'column': 8, 'character': 'h'}
+['bravo', 'air', 'camel', 'tango', 'parrot', 'foxtrot', 'sloth']
+**************************************************
+Performing validation step
+VALIDATION FAILURE: {'word': 'sloth', 'row': 4, 'column': 8, 'isAcross': True, 'clue': 'A slow-moving tree-dwelling mammal', 'positions': '(s, 4, 8), (l, 4, 9), (o, 5, 8), (t, 6, 8), (h, 7, 8)'}; Retrying with another word
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+{'row': 7, 'column': 5, 'character': 'f'}
+{'row': 7, 'column': 6, 'character': 'o'}
+{'row': 7, 'column': 7, 'character': 'x'}
+{'row': 7, 'column': 8, 'character': 't'}
+{'row': 7, 'column': 9, 'character': 'r'}
+{'row': 8, 'column': 9, 'character': 'o'}
+{'row': 9, 'column': 9, 'character': 't'}
+['bravo', 'air', 'camel', 'tango', 'parrot', 'foxtrot']
+**************************************************
+Attempting to generate a new word
+{
+    "word": "moose",
+    "row": 2,
+    "column": 6,
+    "isAcross": true,
+    "clue": "A large deer with palmate antlers",
+    "positions": "(m, 2, 6), (o, 2, 7), (o, 2, 8), (s, 2, 9), (e, 2, 10)"
+}
+**************************************************
+Extracting new word from response
+{'word': 'moose', 'row': 2, 'column': 6, 'isAcross': True, 'clue': 'A large deer with palmate antlers', 'positions': '(m, 2, 6), (o, 2, 7), (o, 2, 8), (s, 2, 9), (e, 2, 10)'}
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+{'row': 7, 'column': 5, 'character': 'f'}
+{'row': 7, 'column': 6, 'character': 'o'}
+{'row': 7, 'column': 7, 'character': 'x'}
+{'row': 7, 'column': 8, 'character': 't'}
+{'row': 7, 'column': 9, 'character': 'r'}
+{'row': 8, 'column': 9, 'character': 'o'}
+{'row': 9, 'column': 9, 'character': 't'}
+{'row': 2, 'column': 6, 'character': 'm'}
+{'row': 2, 'column': 7, 'character': 'o'}
+{'row': 2, 'column': 8, 'character': 'o'}
+{'row': 2, 'column': 9, 'character': 's'}
+{'row': 2, 'column': 10, 'character': 'e'}
+['bravo', 'air', 'camel', 'tango', 'parrot', 'foxtrot', 'moose']
+**************************************************
+Performing validation step
+VALIDATION FAILURE: {'word': 'moose', 'row': 2, 'column': 6, 'isAcross': True, 'clue': 'A large deer with palmate antlers', 'positions': '(m, 2, 6), (o, 2, 7), (o, 2, 8), (s, 2, 9), (e, 2, 10)'}; Retrying with another word
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+{'row': 7, 'column': 5, 'character': 'f'}
+{'row': 7, 'column': 6, 'character': 'o'}
+{'row': 7, 'column': 7, 'character': 'x'}
+{'row': 7, 'column': 8, 'character': 't'}
+{'row': 7, 'column': 9, 'character': 'r'}
+{'row': 8, 'column': 9, 'character': 'o'}
+{'row': 9, 'column': 9, 'character': 't'}
+['bravo', 'air', 'camel', 'tango', 'parrot', 'foxtrot']
+**************************************************
+Attempting to generate a new word
+{
+    "word": "grate",
+    "row": 3,
+    "column": 0,
+    "isAcross": false,
+    "clue": "To shred or reduce to small particles",
+    "positions": "(g, 3, 0), (r, 4, 0), (a, 5, 0), (t, 6, 0), (e, 7, 0)"
+}
+**************************************************
+Extracting new word from response
+{'word': 'grate', 'row': 3, 'column': 0, 'isAcross': False, 'clue': 'To shred or reduce to small particles', 'positions': '(g, 3, 0), (r, 4, 0), (a, 5, 0), (t, 6, 0), (e, 7, 0)'}
+**************************************************
+Getting character positions and words
+{'row': 0, 'column': 1, 'character': 'b'}
+{'row': 0, 'column': 2, 'character': 'r'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 0, 'column': 4, 'character': 'v'}
+{'row': 0, 'column': 5, 'character': 'o'}
+{'row': 0, 'column': 3, 'character': 'a'}
+{'row': 1, 'column': 3, 'character': 'i'}
+{'row': 2, 'column': 3, 'character': 'r'}
+{'row': 4, 'column': 3, 'character': 'c'}
+{'row': 4, 'column': 4, 'character': 'a'}
+{'row': 4, 'column': 5, 'character': 'm'}
+{'row': 4, 'column': 6, 'character': 'e'}
+{'row': 4, 'column': 7, 'character': 'l'}
+{'row': 7, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 1, 'character': 'a'}
+{'row': 7, 'column': 2, 'character': 'n'}
+{'row': 7, 'column': 3, 'character': 'g'}
+{'row': 7, 'column': 4, 'character': 'o'}
+{'row': 6, 'column': 1, 'character': 'p'}
+{'row': 6, 'column': 2, 'character': 'a'}
+{'row': 6, 'column': 3, 'character': 'r'}
+{'row': 6, 'column': 4, 'character': 'r'}
+{'row': 6, 'column': 5, 'character': 'o'}
+{'row': 6, 'column': 6, 'character': 't'}
+{'row': 7, 'column': 5, 'character': 'f'}
+{'row': 7, 'column': 6, 'character': 'o'}
+{'row': 7, 'column': 7, 'character': 'x'}
+{'row': 7, 'column': 8, 'character': 't'}
+{'row': 7, 'column': 9, 'character': 'r'}
+{'row': 8, 'column': 9, 'character': 'o'}
+{'row': 9, 'column': 9, 'character': 't'}
+{'row': 3, 'column': 0, 'character': 'g'}
+{'row': 4, 'column': 0, 'character': 'r'}
+{'row': 5, 'column': 0, 'character': 'a'}
+{'row': 6, 'column': 0, 'character': 't'}
+{'row': 7, 'column': 0, 'character': 'e'}
+['bravo', 'air', 'camel', 'tango', 'parrot', 'foxtrot', 'grate']
+**************************************************
+Performing validation step
+VALIDATION FAILURE: {'word': 'grate', 'row': 3, 'column': 0, 'isAcross': False, 'clue': 'To shred or reduce to small particles', 'positions': '(g, 3, 0), (r, 4, 0), (a, 5, 0), (t, 6, 0), (e, 7, 0)'}; Retrying with another word
+**************************************************
+{"words": [{"word": "bravo", "row": 0, "column": 1, "isAcross": true, "clue": "form of joy", "positions": "(b, 0, 1), (r, 0, 2), (a, 0, 3), (v, 0, 4), (o, 0, 5)"}, {"word": "air", "row": 0, "column": 3, "isAcross": false, "clue": "used to breathe", "positions": "(a, 0, 3), (i, 1, 3), (r, 2, 3)"}, {"word": "camel", "row": 4, "column": 3, "isAcross": true, "clue": "Desert animal with a humpy back", "positions": "(c, 4, 3), (a, 4, 4), (m, 4, 5), (e, 4, 6), (l, 4, 7)"}, {"word": "tango", "row": 7, "column": 0, "isAcross": true, "clue": "A lively Latin dance", "positions": "(t, 7, 0), (a, 7, 1), (n, 7, 2), (g, 7, 3), (o, 7, 4)"}, {"word": "parrot", "row": 6, "column": 1, "isAcross": true, "clue": "A colorful tropical bird that can mimic speech.", "positions": "(p, 6, 1), (a, 6, 2), (r, 6, 3), (r, 6, 4), (o, 6, 5), (t, 6, 6)"}, {"word": "foxtrot", "row": 7, "column": 5, "isAcross": true, "clue": "A lively dance step in ragtime music", "positions": "(f, 7, 5), (o, 7, 6), (x, 7, 7), (t, 7, 8), (r, 7, 9), (o, 8, 9), (t, 9, 9)"}]}
+
+Process finished with exit code 0
