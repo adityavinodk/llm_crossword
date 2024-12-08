@@ -59,14 +59,14 @@ def generate_next_word(llm, grid_size, input_words, retry_count=1):
         print(new_word_dict)
         print("*" * 50)
 
-        if not new_word_dict.get("message"):
+        if isinstance(new_word_dict, dict) and not new_word_dict.get("message"):
             append_new_word(input_words, new_word_dict)
             try:
                 char_positions, words = get_character_positions_and_words(
                     input_words, grid_size
                 )
                 generated = True
-            except CharacterConflictException as e:
+            except (CharacterConflictException, OutOfBoundsException) as e:
                 print(e)
                 print("Retrying...")
                 print("*" * 50)
