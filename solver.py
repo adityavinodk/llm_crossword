@@ -10,16 +10,13 @@ from helper import *
 
 load_dotenv()
 
-
-generate_word_prompt_template = read_prompt_template(
-    "prompts/generate_word_prompt_template.txt"
-)
+solver_prompt_template = read_prompt_template("prompts/solver_prompt_template.txt")
 
 chat_prompt = ChatPromptTemplate.from_messages(
     [
-        SystemMessage(content=generate_word_prompt_template),
+        SystemMessage(content=solver_prompt_template),
         HumanMessagePromptTemplate.from_template(
-            "char_positions=\n{char_positions}\n\nwords={words}\n\ngrid_size={grid_size}"
+            "clue_metadata=\n{clue_metadata}\n\nchar_positions=\n{char_positions}\n\nwords={words}\n\ngrid_size={grid_size}"
         ),
     ]
 )
@@ -33,48 +30,58 @@ def remove_last_word(words_dict):
     words_dict.get("words").pop()
 
 
-def generate_next_word(llm, grid_size, input_words, retry_count=1):
+def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state, retry_count=1):
     # get character positions
-    char_positions, words = get_character_positions_and_words(input_words, grid_size)
+    char_positions, words = get_character_positions_and_words(solved_state, grid_size)
     # print_char_positions_and_words(char_positions, words)
 
-    generated = False
+    guessed = False
     new_word_dict = {}
 
-    while not generated and retry_count > 0:
+    while not guessed and retry_count > 0:
         # get new word
-        response1 = llm.invoke(
+        response = llm.invoke(
             input=chat_prompt.format_messages(
-                char_positions=char_positions, words=words, grid_size=grid_size
+                clue_metadata=clue_metadata,
+                char_positions=char_positions,
+                words=words,
+                grid_size=grid_size,
             )
         )
-        print("Attempting to generate a new word")
-        print(response1.content)
+        print("Attempting to guess a new clue")
+        print(response.content)
         print("*" * 50)
 
         # extract new word from response1
-        print("Extracting new word from response")
-        new_word_dict = extract_json_from_text(response1.content)
+        print("Extracting guessed word from response")
+        new_word_dict = extract_json_from_text(response.content)
         print(new_word_dict)
         print("*" * 50)
 
         if not new_word_dict.get("message"):
-            append_new_word(input_words, new_word_dict)
+            append_new_word(solved_state, new_word_dict)
             try:
                 char_positions, words = get_character_positions_and_words(
-                    input_words, grid_size
+                    solved_state, grid_size
                 )
-                generated = True
+                guessed = True
             except Exception as e:
                 print(e)
                 print("Retrying...")
                 print("*" * 50)
-                remove_last_word(input_words)
+                remove_last_word(solved_state)
                 retry_count -= 1
         else:
             print("Retrying...")
             retry_count -= 1
-    return generated, input_words, new_word_dict
+
+    new_clue_metadata = clue_metadata
+    if guessed:
+        new_clue_metadata = [
+            clue for clue in clue_metadata if clue["clue"] != new_word_dict["clue"]
+        ]
+
+    return guessed, new_clue_metadata, solved_state, new_word_dict
 
 
 if __name__ == "__main__":
@@ -92,10 +99,10 @@ if __name__ == "__main__":
         help="Grid size for the crossword puzzle (minimum 10).",
     )
     parser.add_argument(
-        "--word_count",
-        type=int,
+        "--puzzle",
+        type=str,
         required=True,
-        help="Number of words to generate (minimum 10).",
+        help="File which stores the crossword puzzle state.",
     )
 
     args = parser.parse_args()
@@ -103,9 +110,11 @@ if __name__ == "__main__":
     if args.grid_size < 10:
         parser.error("grid_size must be at least 10.")
 
+    with open("crossword.json", "r") as f:
+        puzzle = json.load(f)
+
     print(f"Model: {args.model}")
     print(f"Grid Size: {args.grid_size}")
-    print(f"Word Count: {args.word_count}")
 
     llm = ChatOpenAI(
         model="gpt-4o",
@@ -122,35 +131,31 @@ if __name__ == "__main__":
             max_tokens=1000,
         )
 
-    count = 0
-    generated = True
+    unsolved_count = len(puzzle["words"])
+    clue_metadata, solution = return_clue_metadata(puzzle)
+    guessed = True
     api_retry_count = 3
-    crossword_json = {"words": []}
-    while count < args.word_count and api_retry_count > 0:
-        generated, input_words, added_word = generate_next_word(
-            llm, args.grid_size, crossword_json, 5
+    solved_state = {"words": []}
+    while unsolved_count and api_retry_count > 0:
+        guessed, clue_metadata, solved_state, solved_word = solve_puzzle_clue(
+            llm, args.grid_size, clue_metadata, solved_state, 5
         )
 
-        if generated:
-            count += 1
+        if guessed:
+            unsolved_count -= 1
             api_retry_count = 3
-            print(f"SUCCESS: new word added is {added_word}")
-            print(f"New word count: {count}")
+            print(f"SUCCESS: new word guessed is {solved_word}")
+            print(f"Remaining unsolved count: {unsolved_count}")
             print("*" * 50)
         else:
-            print("FAILED: calling API to add word again")
+            print("FAILED: calling API to guess word again")
             print("*" * 50)
             api_retry_count -= 1
 
-        crossword_json = input_words
+    print(json.dumps(solved_state, indent=4))
+    print(f"Final Solved Word Count: {len(solved_state["words"])}")
 
-    json_s = json.dumps(crossword_json, indent=4)
-    print(f"Final Crossword Puzzle - \n{json_s}")
-    with open("crossword.json", "w") as f:
-        f.write(json_s)
-    print(f"Final Added Word Count: {count}")
-
-    grid_data, _ = get_character_positions_and_words(crossword_json, args.grid_size)
+    grid_data, _ = get_character_positions_and_words(solved_state, args.grid_size)
     positions = {}
     for d in grid_data:
         positions[f"{d['row']},{d['column']}"] = d["character"]
@@ -163,3 +168,9 @@ if __name__ == "__main__":
             else:
                 print("_", end=" ")
         print()
+
+    correct_count = 0
+    for word_d in solved_state["words"]:
+        if word_d["word"] == solution[(word_d["row"], word_d["column"], word_d["isAcross"])]:
+            correct_count += 1
+    print(f"\nCorrect - {correct_count}/{len(puzzle["words"])}")

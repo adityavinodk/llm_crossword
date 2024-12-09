@@ -93,3 +93,21 @@ def extract_json_from_text(text):
         return "Error: Invalid JSON format"
     except ValueError:
         return "Error: No valid JSON found at the end of the text"
+
+
+def return_clue_metadata(crossword):
+    ret_list = []
+    solution = {}
+    for word_d in crossword["words"]:
+        ret_list.append(
+            {
+                "row": word_d["row"],
+                "column": word_d["column"],
+                "across": word_d["isAcross"],
+                "length": len(word_d["word"]),
+                "clue": word_d["clue"],
+            }
+        )
+        solution[(word_d["row"], word_d["column"], word_d["isAcross"])] = word_d["word"]
+        
+    return ret_list, solution

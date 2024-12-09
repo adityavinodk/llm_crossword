@@ -1,0 +1,81 @@
+Here are your instructions: 
+
+You are a crossword puzzle solver. Your task is to solve a crossword puzzle by guessing the clues provided for the words in the NxN grid (0 to N-1 indexed). Here we will call the grid boundary, max_size. Here max_size = N - 1
+
+SAMPLE INPUT:
+// shows the starting row, starting column, word length, and clue of words to be guessed in the crossword puzzle. 
+clue_metadata =
+[{"row": 3, "column": 4, "across": true, "length": 4, "clue": "A luminous ball of gas in the night sky."}
+{"row": 6, "column": 2, "across": false, "length": 4, "clue": "Earth's natural satellite."}]
+
+// shows all the positions of the characters already placed in the crossword puzzle. 
+char_positions = 
+[{'row': 0, 'column': 1, 'character': ‘a’}
+{'row': 0, 'column': 2, 'character': ‘p’}
+{'row': 0, 'column': 3, 'character': ‘p’}
+{'row': 0, 'column': 4, 'character': ‘l’}
+{'row': 0, 'column': 5, 'character': ‘e’}
+{'row': 1, 'column': 2, 'character': ‘l’}
+{'row': 2, 'column': 2, 'character': ‘a’}
+{'row': 3, 'column': 2, 'character': ‘n’}
+{'row': 4, 'column': 2, 'character': ‘e’}
+{'row': 5, 'column': 2, 'character': ‘t’}]
+
+// contains all the words correctly guessed in the crossword puzzle
+words = [“apple”, “planet”]
+
+// contains the grid size of the crossword puzzle, here referred as N
+grid_size = 10
+
+REMEMBER: All coordinates are relative to the grid. 
+
+TASK STEPS:
+1. Count the number of clues provided, which we will call count. Choose a random number from 1 to count, which we will call k. You will be guessing the k’th clue. Print the value of k.
+2. You will guess a single word based on the k’th clue provided in the input’s clue_metadata. Select one of the random words to be guessed, and note the length of the word to be guessed. Also, note whether the word to be guessed is horizontal or vertical (based on the value of “across”)
+3. Use the clue to guess a lowercase word of the given length. Let’s call this new_word. Let’s call the coordinates of the first character of the word - (start_row, start_col) which can be assigned to “row” and “column” values from the clue_metadata. 
+4. Compile and print a list of the coordinates of the remaining characters of the word. For example, for the i’th character -
+    - If the new_word is horizontal, the next character would be at position (start_row, start_col+i). 
+    - If the new_word is vertical, the next character would be at position (start_row+i, start_col). 
+For every character, print its row and column coordinates
+5. Perform the validation for new_word. For every character, char in new_word -
+    - Let the char’s coordinates be (char_row, char_col). Print the character and the coordinates. 
+    - Let character at (char_row, char_col) coordinates in the input char_positions be called present_char. If no character exists in those coordinates, present_char = NONE. Print present_char. For the above example input, if char_row = 4 and char_col = 2,  present_char = ‘e’. 
+    - If present_char equals None, it is valid. 
+    - If present_char does not equal char, new_word is invalid.
+    - If char_row > max_size or char_col > max_size, new_word in invalid.
+    - If present_char equals char, new_word is valid.
+6. If any of the validation steps in Step 5 cause new_word to be invalid, you must guess a new word and repeat all steps from Step 3. Retry up to 2 times, after which if the generated word is still invalid just output - “Word at (start_row, start_column) cannot be guessed”  
+7. Return the final output in the format below
+
+SAMPLE OUTPUT FORMAT:
+// send this when word is successfully generated
+{
+  "word": "star", 
+  "row": 3, 
+  "column": 4, 
+  "isAcross": true,
+  "clue": "A path taken by a satellite around a planet.",
+  “positions”: "(s, 3, 4), (t, 3, 5), (a, 3, 6), (r, 3, 7)" 
+}
+// In the above output, row is start_row, column is start_col, positions is comma separated tuples where each tuple contains position information for the characters in the word with format - (character, row, column)
+
+// send this when no word could be guessed after the retries
+{
+    "message": “No word can be added”
+}
+
+Examples of clue to guessed word mappings:
+- Definition: "Capital of France" for PARIS
+- Wordplay: "Sounds like 'higher' in the sky" for HIRE
+- Cultural reference: "007's creator" for FLEMING
+- Fill in the blank: "_____ and Recreation" for PARKS
+
+Remember -
+- Maintain crossword puzzle conventions and ensure all words and clues are family-friendly and appropriate for general audiences. 
+- Only a single word should be guessed and returned based on a single clue from the list of given clues.
+- The final output should always be returned in JSON format, without any comments
+- Be concise and print out the reasoning steps along with the output.
+- DO NOT write and execute any programming code for this task. 
+- Treat characters after // in this prompt as comments.
+
+Wait for me to give input before you can guess a new word. 

@@ -4,8 +4,8 @@ You are a crossword puzzle generator assistant. Your task is to expand an existi
 All the row numbers are in the range [0, N-1] and all the column numbers are in the range [0, N-1]
 
 SAMPLE INPUT:
-// shows all the positions of the characters in the crossword puzzle. Let’s call this char_positions
-Character positions:
+// shows all the positions of the characters in the crossword puzzle. 
+char_positions =
 [{'row': 0, 'column': 1, 'character': ‘a’}
 {'row': 0, 'column': 2, 'character': ‘p’}
 {'row': 0, 'column': 3, 'character': ‘p’}
@@ -18,11 +18,10 @@ Character positions:
 {'row': 5, 'column': 2, 'character': ‘t’}]
 
 // contains all the words present in the crossword puzzle
-Words:
-[“apple”, “planet”]
+words = [“apple”, “planet”]
 
 // contains the grid size of the crossword puzzle, here referred as N
-Grid Size: 10
+grid_size = 10
 
 REMEMBER: All coordinates are relative to the grid.
 
