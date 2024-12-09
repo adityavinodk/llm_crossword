@@ -30,7 +30,7 @@ def remove_last_word(words_dict):
     words_dict.get("words").pop()
 
 
-def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state, retry_count=1):
+def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state):
     # get character positions
     char_positions, words = get_character_positions_and_words(solved_state, grid_size)
     # print_char_positions_and_words(char_positions, words)
@@ -38,42 +38,37 @@ def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state, retry_count=1
     guessed = False
     new_word_dict = {}
 
-    while not guessed and retry_count > 0:
-        # get new word
-        response = llm.invoke(
-            input=chat_prompt.format_messages(
-                clue_metadata=clue_metadata,
-                char_positions=char_positions,
-                words=words,
-                grid_size=grid_size,
-            )
+    response = llm.invoke(
+        input=chat_prompt.format_messages(
+            clue_metadata=clue_metadata,
+            char_positions=char_positions,
+            words=words,
+            grid_size=grid_size,
         )
-        print("Attempting to guess a new clue")
-        print(response.content)
-        print("*" * 50)
+    )
+    print("Attempting to guess a new clue")
+    print(response.content)
+    print("*" * 50)
 
-        # extract new word from response1
-        print("Extracting guessed word from response")
-        new_word_dict = extract_json_from_text(response.content)
-        print(new_word_dict)
-        print("*" * 50)
+    # extract new word from response1
+    print("Extracting guessed word from response")
+    new_word_dict = extract_json_from_text(response.content)
+    print(new_word_dict)
+    print("*" * 50)
 
-        if not new_word_dict.get("message"):
-            append_new_word(solved_state, new_word_dict)
-            try:
-                char_positions, words = get_character_positions_and_words(
-                    solved_state, grid_size
-                )
-                guessed = True
-            except (CharacterConflictException, OutOfBoundsException) as e:
-                print(e)
-                print("Retrying...")
-                print("*" * 50)
-                remove_last_word(solved_state)
-                retry_count -= 1
-        else:
-            print("Retrying...")
-            retry_count -= 1
+    if not new_word_dict.get("message"):
+        append_new_word(solved_state, new_word_dict)
+        try:
+            char_positions, words = get_character_positions_and_words(
+                solved_state, grid_size
+            )
+            guessed = True
+        except (CharacterConflictException, OutOfBoundsException) as e:
+            print(e)
+            print("*" * 50)
+            remove_last_word(solved_state)
+    else:
+        print("Retrying...")
 
     new_clue_metadata = clue_metadata
     if guessed:
@@ -134,11 +129,11 @@ if __name__ == "__main__":
     unsolved_count = len(puzzle["words"])
     clue_metadata, solution = return_clue_metadata(puzzle)
     guessed = True
-    api_retry_count = 3
+    api_retry_count = 5
     solved_state = {"words": []}
     while unsolved_count and api_retry_count > 0:
         guessed, clue_metadata, solved_state, solved_word = solve_puzzle_clue(
-            llm, args.grid_size, clue_metadata, solved_state, 5
+            llm, args.grid_size, clue_metadata, solved_state
         )
 
         if guessed:
@@ -171,6 +166,7 @@ if __name__ == "__main__":
 
     correct_count = 0
     for word_d in solved_state["words"]:
-        if word_d["word"] == solution[(word_d["row"], word_d["column"], word_d["isAcross"])]:
+        metadata_tup = (word_d["row"], word_d["column"], word_d["isAcross"])
+        if metadata_tup in solution and solution[metadata_tup] == word_d["word"]:
             correct_count += 1
     print(f"\nCorrect - {correct_count}/{len(puzzle["words"])}")
