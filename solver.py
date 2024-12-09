@@ -65,7 +65,7 @@ def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state, retry_count=1
                     solved_state, grid_size
                 )
                 guessed = True
-            except Exception as e:
+            except (CharacterConflictException, OutOfBoundsException) as e:
                 print(e)
                 print("Retrying...")
                 print("*" * 50)

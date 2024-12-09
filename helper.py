@@ -44,7 +44,7 @@ def get_character_positions_and_words(words_json, grid_size):
                         column=column,
                         existing_char=existing_char,
                     )
-            elif row > grid_size or column > grid_size:
+            elif row >= grid_size or column >= grid_size:
                 raise OutOfBoundsException(
                     row=row,
                     column=column,
