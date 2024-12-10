@@ -56,7 +56,7 @@ def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state):
     print(new_word_dict)
     print("*" * 50)
 
-    if not new_word_dict.get("message"):
+    if isinstance(new_word_dict, dict) and not new_word_dict.get("message"):
         append_new_word(solved_state, new_word_dict)
         try:
             char_positions, words = get_character_positions_and_words(
@@ -148,7 +148,7 @@ if __name__ == "__main__":
             api_retry_count -= 1
 
     print(json.dumps(solved_state, indent=4))
-    print(f"Final Solved Word Count: {len(solved_state["words"])}")
+    print(f"Final Solved Word Count: {len(solved_state['words'])}")
 
     grid_data, _ = get_character_positions_and_words(solved_state, args.grid_size)
     positions = {}
@@ -169,4 +169,4 @@ if __name__ == "__main__":
         metadata_tup = (word_d["row"], word_d["column"], word_d["isAcross"])
         if metadata_tup in solution and solution[metadata_tup] == word_d["word"]:
             correct_count += 1
-    print(f"\nCorrect - {correct_count}/{len(puzzle["words"])}")
+    print(f"\nCorrect - {correct_count}/{len(puzzle['words'])}")
