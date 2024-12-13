@@ -1,11 +1,7 @@
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain.schema import SystemMessage
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
 from dotenv import load_dotenv
 import json
-import os
-import argparse
 from helper import *
 
 load_dotenv()
@@ -38,14 +34,19 @@ def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state):
     guessed = False
     new_word_dict = {}
 
-    response = llm.invoke(
-        input=chat_prompt.format_messages(
-            clue_metadata=clue_metadata,
-            char_positions=char_positions,
-            words=words,
-            grid_size=grid_size,
+    try:
+        response = llm.invoke(
+            input=chat_prompt.format_messages(
+                clue_metadata=clue_metadata,
+                char_positions=char_positions,
+                words=words,
+                grid_size=grid_size,
+            )
         )
-    )
+    except Exception as e:
+        print(e)
+        return guessed, clue_metadata, solved_state, new_word_dict
+
     print("Attempting to guess a new clue")
     print(response.content)
     print("*" * 50)
@@ -79,7 +80,7 @@ def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state):
     return guessed, new_clue_metadata, solved_state, new_word_dict
 
 
-def solve(llm, grid_size, puzzle):
+def solve(llm, model, grid_size, puzzle):
     if grid_size < 10:
         print("grid_size must be at least 10.")
         return
@@ -87,8 +88,8 @@ def solve(llm, grid_size, puzzle):
     with open(puzzle, "r") as f:
         puzzle = json.load(f)
 
-    print('*' * 50)
-    print(f"SOLVING puzzle using: {llm.model_name}")
+    print("*" * 50)
+    print(f"SOLVING puzzle using: {model}")
 
     unsolved_count = len(puzzle["words"])
     clue_metadata, solution = return_clue_metadata(puzzle)
@@ -136,7 +137,11 @@ def solve(llm, grid_size, puzzle):
 
     for word_d in solved_state["words"]:
         metadata_tup = (word_d["row"], word_d["column"], word_d["isAcross"])
-        if metadata_tup in solution and solution[metadata_tup] == word_d["word"] and word_d["word"] not in seen:
+        if (
+            metadata_tup in solution
+            and solution[metadata_tup] == word_d["word"].lower()
+            and word_d["word"] not in seen
+        ):
             seen[word_d["word"]] = True
             correct_count += 1
             response["solved"].append(word_d["word"])

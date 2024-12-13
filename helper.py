@@ -1,5 +1,10 @@
 import json
 from enum import Enum
+import os
+from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
+from langchain_groq import ChatGroq
+from langchain_anthropic import ChatAnthropic
 
 
 class Difficulty(Enum):
@@ -10,9 +15,6 @@ class Difficulty(Enum):
 
 class CharacterConflictException(Exception):
     def __init__(self, row, column, existing_char):
-        self.row = row
-        self.column = column
-        self.existing_char = existing_char
         super().__init__(
             f"CONFLICT - Row: {row}, Column: {column}, Existing: '{existing_char}'"
         )
@@ -20,9 +22,23 @@ class CharacterConflictException(Exception):
 
 class OutOfBoundsException(Exception):
     def __init__(self, row, column):
-        self.row = row
-        self.column = column
         super().__init__(f"OUT OF BOUNDS - Row: {row}, Column: {column}")
+
+
+class FieldsMissingException(Exception):
+    def __init__(self, field):
+        super().__init__(f"FIELD MISSING - Field: {field}")
+
+
+def get_llm(config):
+    if "gpt" in config.get("model"):
+        return ChatOpenAI(**config)
+    elif "claude" in config.get("model"):
+        return ChatAnthropic(**config, anthropic_api_key=os.getenv("CLAUDE_API_KEY"))
+    elif "llama" in config.get("model"):
+        return ChatGroq(**config)
+    else:
+        return ChatOllama(**config)
 
 
 def write_file(crossword, iteration):
@@ -88,12 +104,6 @@ def print_char_positions_and_words(char_positions, words):
     print("*" * 50)
 
 
-def print_word_accuracy(accuracy):
-    print("\nWORD ACCURACY:")
-    for word in accuracy:
-        print(f"{word}: {accuracy[word]}")
-
-
 def extract_json_from_text(text):
     """
     Extracts JSON content from the end of the input text.
@@ -104,12 +114,20 @@ def extract_json_from_text(text):
         json_end = text.rindex("}")
 
         # Extract everything from that point to the end
-        json_text = text[json_start: json_end + 1]
+        json_text = text[json_start : json_end + 1]
 
         # Validate that it's valid JSON by parsing it
         data = json.loads(json_text)
 
+        necessary_fields = ["row", "column", "isAcross", "clue", "positions"]
+        if "message" not in data:
+            for field in necessary_fields:
+                if field not in data:
+                    raise FieldsMissingException(field)
+
         return data
+    except FieldsMissingException as e:
+        return e
     except json.JSONDecodeError:
         return "Error: Invalid JSON format"
     except ValueError:

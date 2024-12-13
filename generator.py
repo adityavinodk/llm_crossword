@@ -1,42 +1,35 @@
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain.schema import SystemMessage
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
 from dotenv import load_dotenv
 import json
-import os
 import argparse
+from collections import Counter
 from configs.solver import solver_configs
 from helper import *
 from solver import solve
 
 load_dotenv()
 
-MAX_CROSSWORD_ITERATIONS = 3
-
-generate_word_prompt_template = read_prompt_template(
+GENERATE_WORD_PROMPT_TEMPLATE = read_prompt_template(
     "prompts/generate_word_prompt_template.txt"
 )
-
-generate_appropriate_clue_prompt_template = read_prompt_template(
+GENERATE_APPROPRIATE_CLUE_PROMPT_TEMPLATE = read_prompt_template(
     "prompts/clue_generation_prompt_template.txt"
 )
-
-word_generation_chat_prompt = ChatPromptTemplate.from_messages(
+WORD_GENERATION_CHAT_PROMPT = ChatPromptTemplate.from_messages(
     [
-        SystemMessage(content=generate_word_prompt_template),
+        SystemMessage(content=GENERATE_WORD_PROMPT_TEMPLATE),
         HumanMessagePromptTemplate.from_template(
             "char_positions=\n{char_positions}\n\nwords={words}\n\ngrid_size={grid_size}"
         ),
     ]
 )
-
-clue_generation_chat_prompt = ChatPromptTemplate.from_messages(
+CLUE_GENERATION_CHAT_PROMPT = ChatPromptTemplate.from_messages(
     [
-        SystemMessage(content=generate_appropriate_clue_prompt_template),
+        SystemMessage(content=GENERATE_APPROPRIATE_CLUE_PROMPT_TEMPLATE),
         HumanMessagePromptTemplate.from_template(
             "words:\n{words}\n\ndifficulty:{difficulty}"
-        )
+        ),
     ]
 )
 
@@ -60,7 +53,7 @@ def generate_next_word(llm, grid_size, input_words, retry_count=1):
     while not generated and retry_count > 0:
         # get new word
         response1 = llm.invoke(
-            input=word_generation_chat_prompt.format_messages(
+            input=WORD_GENERATION_CHAT_PROMPT.format_messages(
                 char_positions=char_positions, words=words, grid_size=grid_size
             )
         )
@@ -136,112 +129,88 @@ def generate(llm, grid_size, word_count):
     return crossword_json, "output/crossword-0.json"
 
 
-def get_solver(config):
-    if "gpt" in config.get("model"):
-        return ChatOpenAI(**config)
-    elif "claude" in config.get("model"):
-        return ChatAnthropic(**config)
-
-
-# List[{"solved": [...], "unsolved": [...]}]
-def get_word_accuracy(crossword, solver_responses):
-    solved = {}
-    unsolved = {}
-    accuracy = {}
+def get_word_perc(crossword, solver_responses):
+    solved = Counter()
+    unsolved = Counter()
+    perc = {}
 
     # build stats at word level
     for response in solver_responses:
         for word in response["solved"]:
-            if word in solved:
-                solved[word] = solved[word] + 1
-            else:
-                solved[word] = 1
-
+            solved[word] += 1
         for word in response["unsolved"]:
-            if word in unsolved:
-                unsolved[word] = unsolved[word] + 1
-            else:
-                unsolved[word] = 1
+            unsolved[word] += 1
 
     for word_d in crossword["words"]:
-        word = word_d['word']
-        solved_count = solved[word] if word in solved else 0
-        unsolved_count = unsolved[word] if word in unsolved else 0
-        accuracy[word] = solved_count / (solved_count + unsolved_count)
+        word = word_d["word"]
+        solved_count = solved.get(word, 0)
+        unsolved_count = unsolved.get(word, 0)
+        perc[word] = solved_count / (solved_count + unsolved_count)
 
-    print_word_accuracy(accuracy)
+    print("\nWORD SOLVED PERCENTAGE:")
+    for word in perc:
+        print(f"{word}: {perc[word]}")
 
-    return accuracy
+    return perc
 
 
-def determine_clue_updates_needed(crossword, accuracy, desired_difficulty):
-    # see if a change in clue is required based on word accuracy
+def determine_clue_updates_needed(crossword, solve_perc, desired_difficulty):
     update_clue = {}
 
-    words = [word_d['word'] for word_d in crossword["words"]]
+    words = [word_d["word"] for word_d in crossword["words"]]
 
     low_acc_words = []
     medium_acc_words = []
     high_acc_words = []
 
     for word in words:
-        if accuracy[word] < 0.5:
+        if solve_perc[word] < 0.5:
             low_acc_words.append(word)
-        elif accuracy[word] > 0.75:
+        elif solve_perc[word] > 0.75:
             high_acc_words.append(word)
         else:
             medium_acc_words.append(word)
 
-    if desired_difficulty == Difficulty.EASY.value:
-        if high_acc_words and len(high_acc_words) >= 0.75 * len(words):
-            return update_clue
+    if desired_difficulty == Difficulty.EASY.value and len(
+        high_acc_words
+    ) >= 0.75 * len(words):
+        return update_clue
 
-    if desired_difficulty == Difficulty.HARD.value:
-        if low_acc_words and len(low_acc_words) > 0.5 * len(words):
-            return update_clue
+    if desired_difficulty == Difficulty.HARD.value and len(low_acc_words) > 0.5 * len(
+        words
+    ):
+        return update_clue
 
-    if desired_difficulty == Difficulty.MEDIUM.value:
-        if medium_acc_words and 0.5 * len(words) <= len(medium_acc_words) < 0.75 * len(words):
-            return update_clue
+    if desired_difficulty == Difficulty.MEDIUM.value and 0.5 * len(words) <= len(
+        medium_acc_words
+    ) < 0.75 * len(words):
+        return update_clue
 
     for word_d in crossword["words"]:
-        word = word_d['word']
+        word = word_d["word"]
         if desired_difficulty == Difficulty.EASY.value:
-            if accuracy[word] < 0.75:
-                update_clue[word] = True
-            else:
-                update_clue[word] = False
+            update_clue[word] = True if solve_perc[word] < 0.75 else False
         elif desired_difficulty == Difficulty.HARD.value:
-            if accuracy[word] > 0.50:
-                update_clue[word] = True
-            else:
-                update_clue[word] = False
+            update_clue[word] = True if solve_perc[word] > 0.5 else False
         else:
-            if 0.5 <= accuracy[word] <= 0.75:
-                update_clue[word] = False
-            else:
-                update_clue[word] = True
+            update_clue[word] = False if 0.5 <= solve_perc[word] <= 0.75 else True
 
     return update_clue
 
 
-def update_crossword(llm, crossword, words_which_need_clue_updates, desired_difficulty):
+def update_crossword(llm, crossword, clue_update_words, desired_difficulty):
     request = {"words": []}
 
     for word_d in crossword["words"]:
-        word = word_d['word']
-        if word in words_which_need_clue_updates:
-            request["words"].append({
-                "word": word,
-                "clue": word_d["clue"]
-            })
+        word = word_d["word"]
+        if word in clue_update_words:
+            request["words"].append({"word": word, "clue": word_d["clue"]})
 
-    print(f"Generating new clues for: {request}")
-
-    response = llm.invoke(input=clue_generation_chat_prompt.format_messages(
-        words=request,
-        difficulty=desired_difficulty.upper()
-    ))
+    response = llm.invoke(
+        input=CLUE_GENERATION_CHAT_PROMPT.format_messages(
+            words=request, difficulty=desired_difficulty.upper()
+        )
+    )
 
     print("New clues generated are:")
     print(response.content)
@@ -250,62 +219,66 @@ def update_crossword(llm, crossword, words_which_need_clue_updates, desired_diff
     new_word_clues = json.loads(response.content)
 
     for word_d in crossword["words"]:
-        word = word_d['word']
+        word = word_d["word"]
         for new_word_d in new_word_clues["words"]:
-            if word == new_word_d['word'] and new_word_d['updatedClue']:
-                word_d['clue'] = new_word_d['updatedClue']
+            if word == new_word_d["word"] and new_word_d["updatedClue"]:
+                word_d["clue"] = new_word_d["updatedClue"]
 
 
-def generate_crossword(llm, grid_size, word_count, desired_difficulty):
+def generate_crossword(llm, grid_size, word_count, desired_difficulty, iterations):
     crossword, output_file = generate(llm, grid_size, word_count)
 
     # remove this - here for testing
     # output_file = "crossword.json"
-    #
+
     # with open("crossword.json", "r") as f:
     #     crossword = json.load(f)
 
-    for i in range(MAX_CROSSWORD_ITERATIONS):
+    for i in range(iterations):
         iteration = i + 1
-        print('*' * 50)
+        print("*" * 50)
         print(f"ITERATION: {iteration}")
 
         responses = []
 
         # give the puzzle to different solvers
         for config in solver_configs:
-            solver = get_solver(config)
-            response = solve(solver, grid_size, output_file)
+            solver = get_llm(config)
+            response = solve(solver, config["model"], grid_size, output_file)
             responses.append(response)
-            print(f"RESPONSE {solver.model_name}: {response}")
+            print(f"RESPONSE {config['model']}: {response}")
 
         # get metrics and update clues
-        accuracy = get_word_accuracy(crossword, responses)
-        update_clue = determine_clue_updates_needed(crossword, accuracy, desired_difficulty)
+        solve_perc = get_word_perc(crossword, responses)
+        update_clue = determine_clue_updates_needed(
+            crossword, solve_perc, desired_difficulty
+        )
 
         if update_clue:
             # filter out all the words that need a clue update
-            words_which_need_clue_updates = [word for word in update_clue if update_clue[word] is True]
-            print(f"CLUE UPDATES NEEDED FOR: {words_which_need_clue_updates}")
+            clue_update_words = [word for word in update_clue if update_clue[word]]
+            print(f"CLUE UPDATES NEEDED FOR: {clue_update_words}")
 
             # update the clues for needed words
-            update_crossword(llm, crossword, words_which_need_clue_updates, desired_difficulty)
+            update_crossword(llm, crossword, clue_update_words, desired_difficulty)
 
         output_file = f"output/crossword-{iteration}.json"
         write_file(crossword, iteration)
 
         if not update_clue:
-            print(f"Puzzle difficulty matches user difficulty after {iteration} iteration(s)")
+            print(
+                f"Puzzle difficulty matches user difficulty after {iteration} iteration(s)"
+            )
             break
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Crossword Puzzle Generator")
     parser.add_argument(
-        "--model",
-        choices=["claude", "openai"],
+        "--gen_model",
+        choices=["claude", "gpt", "llama", "mistral"],
         required=True,
-        help="Choose the model to use: 'claude' or 'openai'.",
+        help="Choose the model to use for generating the crossword puzzle",
     )
     parser.add_argument(
         "--grid_size",
@@ -319,12 +292,17 @@ if __name__ == "__main__":
         required=True,
         help="Number of words to generate (minimum 10).",
     )
-
     parser.add_argument(
         "--difficulty",
         choices=["easy", "medium", "hard"],
         required=True,
-        help="The desired difficulty of the puzzle.",
+        help="The desired difficulty of the puzzle - {easy, medium, hard}",
+    )
+    parser.add_argument(
+        "--iterations",
+        type=int,
+        required=True,
+        help="Number of times the crossword should be revised",
     )
 
     args = parser.parse_args()
@@ -332,22 +310,32 @@ if __name__ == "__main__":
     if args.grid_size < 10:
         parser.error("grid_size must be at least 10.")
 
-    print(f"GENERATING crossword using: {args.model}, grid size: {args.grid_size}, word count: {args.word_count}, "
-          f"difficulty: {args.difficulty}")
-
-    llm = ChatOpenAI(
-        model="gpt-4o",
-        temperature=1,
-        max_tokens=None,
-        timeout=None,
-        max_retries=4,
+    print(
+        f"GENERATING crossword using: {args.gen_model}, grid size: {args.grid_size}, word count: {args.word_count}, "
+        f"difficulty: {args.difficulty}"
     )
-    if args.model == "claude":
-        llm = ChatAnthropic(
-            model="claude-3-sonnet-20240229",
-            anthropic_api_key=os.getenv("CLAUDE_API_KEY"),
-            temperature=1,
-            max_tokens=1000,
-        )
 
-    generate_crossword(llm, args.grid_size, args.word_count, args.difficulty)
+    generator_config = {
+        "temperature": 1,
+        "max_tokens": None,
+        "timeout": None,
+        "max_retries": 4,
+    }
+
+    model = "gpt-4o"
+    if args.gen_model == "claude":
+        model = "claude-3-5-sonnet-latest"
+    elif args.gen_model == "llama":
+        model = "llama-3.3-70b-versatile"
+    elif args.gen_model == "mistral":
+        model = "mistral"
+
+    generator_config["model"] = model
+
+    generate_crossword(
+        get_llm(generator_config),
+        args.grid_size,
+        args.word_count,
+        args.difficulty,
+        args.iterations,
+    )

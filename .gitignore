@@ -5,3 +5,4 @@ logs/
 .ruff_cache/
 crossword.json
 *.log
+output/

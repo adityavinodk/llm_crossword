@@ -41,7 +41,7 @@ TASK STEPS:
     - If char_row > max_size or char_col > max_size, new_word in invalid.
     - If present_char equals char, new_word is valid.
 5. If any of the validation steps in Step 4 cause new_word to be invalid, you must repeat from word generation from Step 1. Retry up to 4 times, after which if the generated word is still invalid just output - “No word can be added”
-6. Generate a tricky clue for the new word
+6. Generate a clue for the new word
 7. Return the final output in the format below
 
 SAMPLE OUTPUT FORMAT:
@@ -52,13 +52,13 @@ SAMPLE OUTPUT FORMAT:
     "column": 4,
     "isAcross": true
     "clue": "A path taken by a satellite around a planet.",
-    “positions”: "(o, 5, 4), (r, 5, 5), (b, 5, 6), (i, 5, 7), (t, 5, 8)" 
+    "positions": "(o, 5, 4), (r, 5, 5), (b, 5, 6), (i, 5, 7), (t, 5, 8)" 
 }
 // In the above output, row is start_row, column is start_col, positions is comma separated tuples where each tuple contains position information for the characters in the word with format - (character, row, column)
 
 // send this when word could not be generated after all retries
 {
-    "message": “No word can be added”
+    "message": "No word can be added"
 }
 
 Examples of good clue types:
