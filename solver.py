@@ -89,7 +89,6 @@ def solve(llm, grid_size, puzzle):
 
     print('*' * 50)
     print(f"SOLVING puzzle using: {llm.model_name}")
-    print('*' * 50)
 
     unsolved_count = len(puzzle["words"])
     clue_metadata, solution = return_clue_metadata(puzzle)

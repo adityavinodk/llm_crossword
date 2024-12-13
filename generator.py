@@ -12,14 +12,14 @@ from solver import solve
 
 load_dotenv()
 
-MAX_CROSSWORD_ITERATIONS = 2
+MAX_CROSSWORD_ITERATIONS = 3
 
 generate_word_prompt_template = read_prompt_template(
     "prompts/generate_word_prompt_template.txt"
 )
 
 generate_appropriate_clue_prompt_template = read_prompt_template(
-    "prompts/clue_generation_template.txt"
+    "prompts/clue_generation_prompt_template.txt"
 )
 
 word_generation_chat_prompt = ChatPromptTemplate.from_messages(
@@ -169,6 +169,8 @@ def get_word_accuracy(crossword, solver_responses):
         unsolved_count = unsolved[word] if word in unsolved else 0
         accuracy[word] = solved_count / (solved_count + unsolved_count)
 
+    print_word_accuracy(accuracy)
+
     return accuracy
 
 
@@ -195,7 +197,7 @@ def determine_clue_updates_needed(crossword, accuracy, desired_difficulty):
             return update_clue
 
     if desired_difficulty == Difficulty.HARD.value:
-        if low_acc_words and len(low_acc_words) < 0.5 * len(words):
+        if low_acc_words and len(low_acc_words) > 0.5 * len(words):
             return update_clue
 
     if desired_difficulty == Difficulty.MEDIUM.value:
@@ -257,11 +259,16 @@ def update_crossword(llm, crossword, words_which_need_clue_updates, desired_diff
 def generate_crossword(llm, grid_size, word_count, desired_difficulty):
     crossword, output_file = generate(llm, grid_size, word_count)
 
+    # remove this - here for testing
+    # output_file = "crossword.json"
+    #
+    # with open("crossword.json", "r") as f:
+    #     crossword = json.load(f)
+
     for i in range(MAX_CROSSWORD_ITERATIONS):
         iteration = i + 1
         print('*' * 50)
         print(f"ITERATION: {iteration}")
-        print('*' * 50)
 
         responses = []
 
@@ -276,17 +283,20 @@ def generate_crossword(llm, grid_size, word_count, desired_difficulty):
         accuracy = get_word_accuracy(crossword, responses)
         update_clue = determine_clue_updates_needed(crossword, accuracy, desired_difficulty)
 
-        # filter out all the words that need a clue update
-        if not update_clue:
-            break
+        if update_clue:
+            # filter out all the words that need a clue update
+            words_which_need_clue_updates = [word for word in update_clue if update_clue[word] is True]
+            print(f"CLUE UPDATES NEEDED FOR: {words_which_need_clue_updates}")
 
-        words_which_need_clue_updates = [word for word in update_clue if update_clue[word] is True]
-
-        # update the clues for needed words
-        update_crossword(llm, crossword, words_which_need_clue_updates, desired_difficulty)
+            # update the clues for needed words
+            update_crossword(llm, crossword, words_which_need_clue_updates, desired_difficulty)
 
         output_file = f"output/crossword-{iteration}.json"
         write_file(crossword, iteration)
+
+        if not update_clue:
+            print(f"Puzzle difficulty matches user difficulty after {iteration} iteration(s)")
+            break
 
 
 if __name__ == "__main__":

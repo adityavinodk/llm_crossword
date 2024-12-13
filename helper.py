@@ -88,6 +88,12 @@ def print_char_positions_and_words(char_positions, words):
     print("*" * 50)
 
 
+def print_word_accuracy(accuracy):
+    print("\nWORD ACCURACY:")
+    for word in accuracy:
+        print(f"{word}: {accuracy[word]}")
+
+
 def extract_json_from_text(text):
     """
     Extracts JSON content from the end of the input text.
