@@ -193,7 +193,7 @@ def determine_clue_updates_needed(crossword, accuracy, desired_difficulty):
             medium_acc_words.append(word)
 
     if desired_difficulty == Difficulty.EASY.value:
-        if high_acc_words and len(high_acc_words) > 0.75 * len(words):
+        if high_acc_words and len(high_acc_words) >= 0.75 * len(words):
             return update_clue
 
     if desired_difficulty == Difficulty.HARD.value:
@@ -201,7 +201,7 @@ def determine_clue_updates_needed(crossword, accuracy, desired_difficulty):
             return update_clue
 
     if desired_difficulty == Difficulty.MEDIUM.value:
-        if medium_acc_words and 0.5 * len(words) <= len(medium_acc_words) <= 0.75 * len(words):
+        if medium_acc_words and 0.5 * len(words) <= len(medium_acc_words) < 0.75 * len(words):
             return update_clue
 
     for word_d in crossword["words"]:

@@ -131,9 +131,13 @@ def solve(llm, grid_size, puzzle):
     response = {"solved": [], "unsolved": []}
 
     correct_count = 0
+
+    seen = {}
+
     for word_d in solved_state["words"]:
         metadata_tup = (word_d["row"], word_d["column"], word_d["isAcross"])
-        if metadata_tup in solution and solution[metadata_tup] == word_d["word"]:
+        if metadata_tup in solution and solution[metadata_tup] == word_d["word"] and word_d["word"] not in seen:
+            seen[word_d["word"]] = True
             correct_count += 1
             response["solved"].append(word_d["word"])
     print(f"\nCorrect - {correct_count}/{len(puzzle['words'])}")
