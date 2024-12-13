@@ -1,0 +1,12 @@
+{
+    "words": [
+        {
+            "word": "parrot",
+            "row": 6,
+            "column": 3,
+            "isAcross": false,
+            "clue": "Raucous plagiarist flaunting its pilfered plumage",
+            "positions": "(p, 6, 3), (a, 7, 3), (r, 8, 3), (r, 9, 3), (o, 10, 3), (t, 11, 3)"
+        }
+    ]
+}

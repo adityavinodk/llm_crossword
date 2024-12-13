@@ -1,4 +1,11 @@
 import json
+from enum import Enum
+
+
+class Difficulty(Enum):
+    EASY = "easy"
+    MEDIUM = "medium"
+    HARD = "hard"
 
 
 class CharacterConflictException(Exception):
@@ -16,6 +23,14 @@ class OutOfBoundsException(Exception):
         self.row = row
         self.column = column
         super().__init__(f"OUT OF BOUNDS - Row: {row}, Column: {column}")
+
+
+def write_file(crossword, iteration):
+    json_s = json.dumps(crossword, indent=4)
+    print(f"[ITERATION {iteration}] Crossword Puzzle:  \n{json_s}")
+    output_file = f"output/crossword-{iteration}.json"
+    with open(output_file, "w") as f:
+        f.write(json_s)
 
 
 def read_prompt_template(file_path):
@@ -83,7 +98,7 @@ def extract_json_from_text(text):
         json_end = text.rindex("}")
 
         # Extract everything from that point to the end
-        json_text = text[json_start : json_end + 1]
+        json_text = text[json_start: json_end + 1]
 
         # Validate that it's valid JSON by parsing it
         data = json.loads(json_text)
@@ -109,5 +124,5 @@ def return_clue_metadata(crossword):
             }
         )
         solution[(word_d["row"], word_d["column"], word_d["isAcross"])] = word_d["word"]
-        
+
     return ret_list, solution
