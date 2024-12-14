@@ -5,7 +5,10 @@ import json
 import argparse
 from collections import Counter
 from configs.solver import solver_configs
+import multiprocessing
+from multiprocessing import Pool, Manager
 from helper import *
+from functools import partial
 from solver import solve
 
 load_dotenv()
@@ -225,28 +228,44 @@ def update_crossword(llm, crossword, clue_update_words, desired_difficulty):
                 word_d["clue"] = new_word_d["updatedClue"]
 
 
+def solve_wrapper(config, grid_size, output_file, queue):
+    solver = get_llm(config)
+    response = solve(solver, config["model"], grid_size, output_file, queue)
+    queue.put(f"RESPONSE {config['model']}: {response}")
+    return response
+
+
 def generate_crossword(llm, grid_size, word_count, desired_difficulty, iterations):
-    crossword, output_file = generate(llm, grid_size, word_count)
+    # crossword, output_file = generate(llm, grid_size, word_count)
 
     # remove this - here for testing
-    # output_file = "crossword.json"
+    output_file = "crossword.json"
 
-    # with open("crossword.json", "r") as f:
-    #     crossword = json.load(f)
+    with open("crossword.json", "r") as f:
+        crossword = json.load(f)
 
     for i in range(iterations):
         iteration = i + 1
         print("*" * 50)
         print(f"ITERATION: {iteration}")
 
-        responses = []
+        with Manager() as manager:
+            log_queue = manager.Queue()
 
-        # give the puzzle to different solvers
-        for config in solver_configs:
-            solver = get_llm(config)
-            response = solve(solver, config["model"], grid_size, output_file)
-            responses.append(response)
-            print(f"RESPONSE {config['model']}: {response}")
+            # Create a process pool
+            with Pool(processes=multiprocessing.cpu_count()) as pool:
+                # Use partial to pass common arguments to solve_wrapper
+                solve_func = partial(
+                    solve_wrapper,
+                    grid_size=grid_size,
+                    output_file=output_file,
+                    queue=log_queue,
+                )
+                responses = pool.map(solve_func, solver_configs)
+
+            # Collect and print logs sequentially
+            while not log_queue.empty():
+                print(log_queue.get())
 
         # get metrics and update clues
         solve_perc = get_word_perc(crossword, responses)
@@ -277,31 +296,31 @@ if __name__ == "__main__":
     parser.add_argument(
         "--gen_model",
         choices=["claude", "gpt", "llama", "mistral"],
-        required=True,
+        default="gpt",
         help="Choose the model to use for generating the crossword puzzle",
     )
     parser.add_argument(
         "--grid_size",
         type=int,
-        required=True,
+        default=15,
         help="Grid size for the crossword puzzle (minimum 10).",
     )
     parser.add_argument(
         "--word_count",
         type=int,
-        required=True,
+        default=10,
         help="Number of words to generate (minimum 10).",
     )
     parser.add_argument(
         "--difficulty",
         choices=["easy", "medium", "hard"],
-        required=True,
+        default="medium",
         help="The desired difficulty of the puzzle - {easy, medium, hard}",
     )
     parser.add_argument(
         "--iterations",
         type=int,
-        required=True,
+        default=1,
         help="Number of times the crossword should be revised",
     )
 
