@@ -1,4 +1,16 @@
 import json
+from enum import Enum
+import os
+from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
+from langchain_groq import ChatGroq
+from langchain_anthropic import ChatAnthropic
+
+
+class Difficulty(Enum):
+    EASY = "easy"
+    MEDIUM = "medium"
+    HARD = "hard"
 
 
 class CharacterConflictException(Exception):
@@ -6,9 +18,8 @@ class CharacterConflictException(Exception):
         self.row = row
         self.column = column
         self.existing_char = existing_char
-        super().__init__(
-            f"CONFLICT - Row: {row}, Column: {column}, Existing: '{existing_char}'"
-        )
+        message = f"CONFLICT - Row: {row}, Column: {column}, Existing: '{existing_char}'"
+        super().__init__(message)
 
 
 class OutOfBoundsException(Exception):
@@ -16,6 +27,31 @@ class OutOfBoundsException(Exception):
         self.row = row
         self.column = column
         super().__init__(f"OUT OF BOUNDS - Row: {row}, Column: {column}")
+
+
+class FieldsMissingException(Exception):
+    def __init__(self, field):
+        self.field = field
+        super().__init__(f"FIELD MISSING - Field: {field}")
+
+
+def get_llm(config):
+    if "gpt" in config.get("model"):
+        return ChatOpenAI(**config)
+    elif "claude" in config.get("model"):
+        return ChatAnthropic(**config, anthropic_api_key=os.getenv("CLAUDE_API_KEY"))
+    elif "llama" in config.get("model"):
+        return ChatGroq(**config)
+    else:
+        return ChatOllama(**config)
+
+
+def write_file(crossword, iteration):
+    json_s = json.dumps(crossword, indent=4)
+    print(f"[ITERATION {iteration}] Crossword Puzzle:  \n{json_s}")
+    output_file = f"output/crossword-{iteration}.json"
+    with open(output_file, "w") as f:
+        f.write(json_s)
 
 
 def read_prompt_template(file_path):
@@ -83,12 +119,20 @@ def extract_json_from_text(text):
         json_end = text.rindex("}")
 
         # Extract everything from that point to the end
-        json_text = text[json_start : json_end + 1]
+        json_text = text[json_start: json_end + 1]
 
         # Validate that it's valid JSON by parsing it
         data = json.loads(json_text)
 
+        necessary_fields = ["row", "column", "isAcross", "clue", "positions"]
+        if "message" not in data:
+            for field in necessary_fields:
+                if field not in data:
+                    raise FieldsMissingException(field)
+
         return data
+    except FieldsMissingException as e:
+        return e
     except json.JSONDecodeError:
         return "Error: Invalid JSON format"
     except ValueError:
@@ -109,5 +153,5 @@ def return_clue_metadata(crossword):
             }
         )
         solution[(word_d["row"], word_d["column"], word_d["isAcross"])] = word_d["word"]
-        
+
     return ret_list, solution

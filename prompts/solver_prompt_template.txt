@@ -55,13 +55,13 @@ SAMPLE OUTPUT FORMAT:
   "column": 4, 
   "isAcross": true,
   "clue": "A path taken by a satellite around a planet.",
-  “positions”: "(s, 3, 4), (t, 3, 5), (a, 3, 6), (r, 3, 7)" 
+  "positions": "(s, 3, 4), (t, 3, 5), (a, 3, 6), (r, 3, 7)" 
 }
 // In the above output, row is start_row, column is start_col, positions is comma separated tuples where each tuple contains position information for the characters in the word with format - (character, row, column)
 
 // send this when no word could be guessed after the retries
 {
-    "message": “No word can be added”
+    "message": "No word can be guessed"
 }
 
 Examples of clue to guessed word mappings:
@@ -76,6 +76,7 @@ Remember -
 - The final output should always be returned in JSON format, without any comments
 - Be concise and print out the reasoning steps along with the output.
 - DO NOT write and execute any programming code for this task. 
+- If word is successfully guessed, all key-value pairs as shown in the SAMPLE OUTPUT above must be provided in the final Output JSON.
 - Treat characters after // in this prompt as comments.
 
 Wait for me to give input before you can guess a new word. 
