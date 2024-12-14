@@ -44,7 +44,7 @@ def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state, queue):
             )
         )
     except Exception as e:
-        queue.put(e)
+        queue.put(str(e))
         return guessed, clue_metadata, solved_state, new_word_dict
 
     queue.put("Attempting to guess a new clue")
@@ -65,7 +65,7 @@ def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state, queue):
             )
             guessed = True
         except (CharacterConflictException, OutOfBoundsException) as e:
-            queue.put(e)
+            queue.put(str(e))
             queue.put("*" * 50)
             remove_last_word(solved_state)
     else:
@@ -140,9 +140,9 @@ def solve(llm, model, grid_size, puzzle, queue):
     for word_d in solved_state["words"]:
         metadata_tup = (word_d["row"], word_d["column"], word_d["isAcross"])
         if (
-            metadata_tup in solution
-            and solution[metadata_tup] == word_d["word"].lower()
-            and word_d["word"] not in seen
+                metadata_tup in solution
+                and solution[metadata_tup] == word_d["word"].lower()
+                and word_d["word"] not in seen
         ):
             seen[word_d["word"]] = True
             correct_count += 1

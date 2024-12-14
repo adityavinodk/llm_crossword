@@ -175,17 +175,17 @@ def determine_clue_updates_needed(crossword, solve_perc, desired_difficulty):
             medium_acc_words.append(word)
 
     if desired_difficulty == Difficulty.EASY.value and len(
-        high_acc_words
+            high_acc_words
     ) >= 0.75 * len(words):
         return update_clue
 
     if desired_difficulty == Difficulty.HARD.value and len(low_acc_words) > 0.5 * len(
-        words
+            words
     ):
         return update_clue
 
     if desired_difficulty == Difficulty.MEDIUM.value and 0.5 * len(words) <= len(
-        medium_acc_words
+            medium_acc_words
     ) < 0.75 * len(words):
         return update_clue
 
@@ -236,13 +236,13 @@ def solve_wrapper(config, grid_size, output_file, queue):
 
 
 def generate_crossword(llm, grid_size, word_count, desired_difficulty, iterations):
-    # crossword, output_file = generate(llm, grid_size, word_count)
+    crossword, output_file = generate(llm, grid_size, word_count)
 
     # remove this - here for testing
-    output_file = "crossword.json"
+    # output_file = "crossword.json"
 
-    with open("crossword.json", "r") as f:
-        crossword = json.load(f)
+    # with open(output_file, "r") as f:
+    #     crossword = json.load(f)
 
     for i in range(iterations):
         iteration = i + 1
@@ -336,7 +336,7 @@ if __name__ == "__main__":
 
     generator_config = {
         "temperature": 1,
-        "max_tokens": None,
+        "max_tokens": 4096,
         "timeout": None,
         "max_retries": 4,
     }

@@ -15,18 +15,23 @@ class Difficulty(Enum):
 
 class CharacterConflictException(Exception):
     def __init__(self, row, column, existing_char):
-        super().__init__(
-            f"CONFLICT - Row: {row}, Column: {column}, Existing: '{existing_char}'"
-        )
+        self.row = row
+        self.column = column
+        self.existing_char = existing_char
+        message = f"CONFLICT - Row: {row}, Column: {column}, Existing: '{existing_char}'"
+        super().__init__(message)
 
 
 class OutOfBoundsException(Exception):
     def __init__(self, row, column):
+        self.row = row
+        self.column = column
         super().__init__(f"OUT OF BOUNDS - Row: {row}, Column: {column}")
 
 
 class FieldsMissingException(Exception):
     def __init__(self, field):
+        self.field = field
         super().__init__(f"FIELD MISSING - Field: {field}")
 
 
@@ -114,7 +119,7 @@ def extract_json_from_text(text):
         json_end = text.rindex("}")
 
         # Extract everything from that point to the end
-        json_text = text[json_start : json_end + 1]
+        json_text = text[json_start: json_end + 1]
 
         # Validate that it's valid JSON by parsing it
         data = json.loads(json_text)
