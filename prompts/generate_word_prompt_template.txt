@@ -23,6 +23,9 @@ words = [“apple”, “planet”]
 // contains the grid size of the crossword puzzle, here referred as N
 grid_size = 10
 
+// contains the clue difficulty of the crossword puzzle
+difficulty = EASY
+
 REMEMBER: All coordinates are relative to the grid.
 
 TASK STEPS:
@@ -41,8 +44,13 @@ TASK STEPS:
     - If char_row > max_size or char_col > max_size, new_word in invalid.
     - If present_char equals char, new_word is valid.
 5. If any of the validation steps in Step 4 cause new_word to be invalid, you must repeat from word generation from Step 1. Retry up to 4 times, after which if the generated word is still invalid just output - “No word can be added”
-6. Generate a clue for the new word
+6. Generate a clue for the new word based on the difficulty provided in input.
 7. Return the final output in the format below
+
+CLUE DIFFICULTY GUIDELINES:
+- EASY: Use straightforward definitions, common knowledge, and simple synonyms. Avoid wordplay, cultural references, or complex associations.
+- MEDIUM: Mix straightforward definitions with moderate wordplay. Can include some common cultural references and slightly challenging associations.
+- HARD: Use complex wordplay, obscure references, clever misdirection, and challenging associations. Clues should require deeper thinking or specific knowledge.
 
 SAMPLE OUTPUT FORMAT:
 // send this when word is successfully generated

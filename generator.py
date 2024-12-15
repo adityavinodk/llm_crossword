@@ -23,7 +23,7 @@ WORD_GENERATION_CHAT_PROMPT = ChatPromptTemplate.from_messages(
     [
         SystemMessage(content=GENERATE_WORD_PROMPT_TEMPLATE),
         HumanMessagePromptTemplate.from_template(
-            "char_positions=\n{char_positions}\n\nwords={words}\n\ngrid_size={grid_size}"
+            "char_positions=\n{char_positions}\n\nwords={words}\n\ngrid_size={grid_size}\n\ndifficulty={difficulty}"
         ),
     ]
 )
@@ -45,7 +45,7 @@ def remove_last_word(words_dict):
     words_dict.get("words").pop()
 
 
-def generate_next_word(llm, grid_size, input_words, retry_count=1):
+def generate_next_word(llm, grid_size, input_words, desired_difficulty, retry_count=1):
     # get character positions
     char_positions, words = get_character_positions_and_words(input_words, grid_size)
     # print_char_positions_and_words(char_positions, words)
@@ -57,7 +57,10 @@ def generate_next_word(llm, grid_size, input_words, retry_count=1):
         # get new word
         response1 = llm.invoke(
             input=WORD_GENERATION_CHAT_PROMPT.format_messages(
-                char_positions=char_positions, words=words, grid_size=grid_size
+                char_positions=char_positions,
+                words=words,
+                grid_size=grid_size,
+                difficulty=desired_difficulty.upper(),
             )
         )
         print("Attempting to generate a new word")
@@ -89,14 +92,14 @@ def generate_next_word(llm, grid_size, input_words, retry_count=1):
     return generated, input_words, new_word_dict
 
 
-def generate(llm, grid_size, word_count):
+def generate(llm, grid_size, word_count, desired_difficulty):
     count = 0
     generated = True
     api_retry_count = 3
     crossword_json = {"words": []}
     while count < word_count and api_retry_count > 0:
         generated, input_words, added_word = generate_next_word(
-            llm, grid_size, crossword_json, 5
+            llm, grid_size, crossword_json, desired_difficulty, 5
         )
 
         if generated:
@@ -175,17 +178,17 @@ def determine_clue_updates_needed(crossword, solve_perc, desired_difficulty):
             medium_acc_words.append(word)
 
     if desired_difficulty == Difficulty.EASY.value and len(
-            high_acc_words
+        high_acc_words
     ) >= 0.75 * len(words):
         return update_clue
 
     if desired_difficulty == Difficulty.HARD.value and len(low_acc_words) > 0.5 * len(
-            words
+        words
     ):
         return update_clue
 
     if desired_difficulty == Difficulty.MEDIUM.value and 0.5 * len(words) <= len(
-            medium_acc_words
+        medium_acc_words
     ) < 0.75 * len(words):
         return update_clue
 
@@ -236,7 +239,7 @@ def solve_wrapper(config, grid_size, output_file, queue):
 
 
 def generate_crossword(llm, grid_size, word_count, desired_difficulty, iterations):
-    crossword, output_file = generate(llm, grid_size, word_count)
+    crossword, output_file = generate(llm, grid_size, word_count, desired_difficulty)
 
     # remove this - here for testing
     # output_file = "crossword.json"
