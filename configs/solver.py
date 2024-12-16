@@ -35,7 +35,7 @@ solver_configs = [
         "max_retries": 4,
     },
     {
-        "model": "mistral",
+        "model": "mixtral-8x7b-32768",
         "temperature": 1,
         "max_tokens": None,
         "timeout": None,

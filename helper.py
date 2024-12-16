@@ -2,7 +2,6 @@ import json
 from enum import Enum
 import os
 from langchain_openai import ChatOpenAI
-from langchain_ollama import ChatOllama
 from langchain_groq import ChatGroq
 from langchain_anthropic import ChatAnthropic
 
@@ -18,7 +17,9 @@ class CharacterConflictException(Exception):
         self.row = row
         self.column = column
         self.existing_char = existing_char
-        message = f"CONFLICT - Row: {row}, Column: {column}, Existing: '{existing_char}'"
+        message = (
+            f"CONFLICT - Row: {row}, Column: {column}, Existing: '{existing_char}'"
+        )
         super().__init__(message)
 
 
@@ -40,10 +41,8 @@ def get_llm(config):
         return ChatOpenAI(**config)
     elif "claude" in config.get("model"):
         return ChatAnthropic(**config, anthropic_api_key=os.getenv("CLAUDE_API_KEY"))
-    elif "llama" in config.get("model"):
-        return ChatGroq(**config)
     else:
-        return ChatOllama(**config)
+        return ChatGroq(**config)
 
 
 def write_file(crossword, iteration):
@@ -109,6 +108,11 @@ def print_char_positions_and_words(char_positions, words):
     print("*" * 50)
 
 
+def vprint(verbose, s):
+    if verbose:
+        print(s)
+
+
 def extract_json_from_text(text):
     """
     Extracts JSON content from the end of the input text.
@@ -119,7 +123,7 @@ def extract_json_from_text(text):
         json_end = text.rindex("}")
 
         # Extract everything from that point to the end
-        json_text = text[json_start: json_end + 1]
+        json_text = text[json_start : json_end + 1]
 
         # Validate that it's valid JSON by parsing it
         data = json.loads(json_text)

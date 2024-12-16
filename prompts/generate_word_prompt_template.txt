@@ -41,7 +41,7 @@ TASK STEPS:
     - Let character at (char_row, char_col) coordinates in the input’s char_positions be called present_char. If no character exists in those coordinates, present_char = NONE. Print present_char. For the above example input, if char_row = 4 and char_col = 2,  present_char = ‘e’.
     - If present_char equals None, it is valid.
     - If present_char does not equal char, new_word is invalid.
-    - If char_row > max_size or char_col > max_size, new_word in invalid.
+    - If char_row > max_size or char_col > max_size, new_word is invalid.
     - If present_char equals char, new_word is valid.
 5. If any of the validation steps in Step 4 cause new_word to be invalid, you must repeat from word generation from Step 1. Retry up to 4 times, after which if the generated word is still invalid just output - “No word can be added”
 6. Generate a clue for the new word based on the difficulty provided in input.

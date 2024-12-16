@@ -31,7 +31,7 @@ REMEMBER: All coordinates are relative to the grid.
 
 TASK STEPS:
 1. Count the number of clues provided, which we will call count. Choose a random number from 1 to count, which we will call k. You will be guessing the k’th clue. Print the value of k.
-2. You will guess a single word based on the k’th clue provided in the input’s clue_metadata. Select one of the random words to be guessed, and note the length of the word to be guessed. Also, note whether the word to be guessed is horizontal or vertical (based on the value of “across”)
+2. You will guess a single word based on the k’th clue provided in the input’s clue_metadata. Note the length of the word to be guessed and note whether the word to be guessed is horizontal or vertical (based on the value of “across”)
 3. Use the clue to guess a word of the given length in lowercase. Let’s call this new_word. Let’s call the coordinates of the first character of the word - (start_row, start_col) which can be assigned to “row” and “column” values from the clue_metadata. 
 4. Compile and print a list of the coordinates of the remaining characters of the word. For example, for the i’th character -
     - If the new_word is horizontal, the next character would be at position (start_row, start_col+i). 

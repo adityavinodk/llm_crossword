@@ -6,7 +6,7 @@ import argparse
 from collections import Counter
 from configs.solver import solver_configs
 import multiprocessing
-from multiprocessing import Pool, Manager
+from multiprocessing import Pool
 from helper import *
 from functools import partial
 from solver import solve
@@ -218,11 +218,13 @@ def update_crossword(llm, crossword, clue_update_words, desired_difficulty):
         )
     )
 
+    clue_json = response.content.strip("\n`").replace("json", "")
+
     print("New clues generated are:")
-    print(response.content)
+    print(clue_json)
     print("*" * 50)
 
-    new_word_clues = json.loads(response.content)
+    new_word_clues = json.loads(clue_json)
 
     for word_d in crossword["words"]:
         word = word_d["word"]
@@ -231,14 +233,16 @@ def update_crossword(llm, crossword, clue_update_words, desired_difficulty):
                 word_d["clue"] = new_word_d["updatedClue"]
 
 
-def solve_wrapper(config, grid_size, output_file, queue):
+def solve_wrapper(config, grid_size, output_file, verbose):
     solver = get_llm(config)
-    response = solve(solver, config["model"], grid_size, output_file, queue)
-    queue.put(f"RESPONSE {config['model']}: {response}")
+    response = solve(solver, config["model"], grid_size, output_file, verbose)
+    print(f"RESPONSE {config['model']}: {response}")
     return response
 
 
-def generate_crossword(llm, grid_size, word_count, desired_difficulty, iterations):
+def generate_crossword(
+    llm, grid_size, word_count, desired_difficulty, iterations, verbose
+):
     crossword, output_file = generate(llm, grid_size, word_count, desired_difficulty)
 
     # remove this - here for testing
@@ -252,23 +256,16 @@ def generate_crossword(llm, grid_size, word_count, desired_difficulty, iteration
         print("*" * 50)
         print(f"ITERATION: {iteration}")
 
-        with Manager() as manager:
-            log_queue = manager.Queue()
-
-            # Create a process pool
-            with Pool(processes=multiprocessing.cpu_count()) as pool:
-                # Use partial to pass common arguments to solve_wrapper
-                solve_func = partial(
-                    solve_wrapper,
-                    grid_size=grid_size,
-                    output_file=output_file,
-                    queue=log_queue,
-                )
-                responses = pool.map(solve_func, solver_configs)
-
-            # Collect and print logs sequentially
-            while not log_queue.empty():
-                print(log_queue.get())
+        # Create a process pool
+        with Pool(processes=multiprocessing.cpu_count()) as pool:
+            # Use partial to pass common arguments to solve_wrapper
+            solve_func = partial(
+                solve_wrapper,
+                grid_size=grid_size,
+                output_file=output_file,
+                verbose=verbose,
+            )
+            responses = list(pool.imap_unordered(solve_func, solver_configs))
 
         # get metrics and update clues
         solve_perc = get_word_perc(crossword, responses)
@@ -326,6 +323,9 @@ if __name__ == "__main__":
         default=1,
         help="Number of times the crossword should be revised",
     )
+    parser.add_argument(
+        "--verbose", action="store_true", help="Enable verbose output for solver"
+    )
 
     args = parser.parse_args()
 
@@ -360,4 +360,5 @@ if __name__ == "__main__":
         args.word_count,
         args.difficulty,
         args.iterations,
+        args.verbose,
     )

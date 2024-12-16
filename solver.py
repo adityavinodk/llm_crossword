@@ -26,10 +26,9 @@ def remove_last_word(words_dict):
     words_dict.get("words").pop()
 
 
-def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state, queue):
+def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state, verbose):
     # get character positions
     char_positions, words = get_character_positions_and_words(solved_state, grid_size)
-    # queue.put_char_positions_and_words(char_positions, words)
 
     guessed = False
     new_word_dict = {}
@@ -44,18 +43,18 @@ def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state, queue):
             )
         )
     except Exception as e:
-        queue.put(str(e))
+        vprint(verbose, str(e))
         return guessed, clue_metadata, solved_state, new_word_dict
 
-    queue.put("Attempting to guess a new clue")
-    queue.put(response.content)
-    queue.put("*" * 50)
+    vprint(verbose, "Attempting to guess a new clue")
+    vprint(verbose, response.content)
+    vprint(verbose, "*" * 50)
 
     # extract new word from response1
-    queue.put("Extracting guessed word from response")
+    vprint(verbose, "Extracting guessed word from response")
     new_word_dict = extract_json_from_text(response.content)
-    queue.put(new_word_dict)
-    queue.put("*" * 50)
+    vprint(verbose, new_word_dict)
+    vprint(verbose, "*" * 50)
 
     if isinstance(new_word_dict, dict) and not new_word_dict.get("message"):
         append_new_word(solved_state, new_word_dict)
@@ -65,11 +64,11 @@ def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state, queue):
             )
             guessed = True
         except (CharacterConflictException, OutOfBoundsException) as e:
-            queue.put(str(e))
-            queue.put("*" * 50)
+            vprint(verbose, str(e))
+            vprint(verbose, "*" * 50)
             remove_last_word(solved_state)
-    else:
-        queue.put("Retrying...")
+        else:
+            vprint(verbose, "Retrying...")
 
     new_clue_metadata = clue_metadata
     if guessed:
@@ -80,47 +79,47 @@ def solve_puzzle_clue(llm, grid_size, clue_metadata, solved_state, queue):
     return guessed, new_clue_metadata, solved_state, new_word_dict
 
 
-def solve(llm, model, grid_size, puzzle, queue):
+def solve(llm, model, grid_size, puzzle, verbose):
     if grid_size < 10:
-        queue.put("grid_size must be at least 10.")
+        vprint(verbose, "grid_size must be at least 10.")
         return
 
     with open(puzzle, "r") as f:
         puzzle = json.load(f)
 
-    queue.put("*" * 50)
-    queue.put(f"SOLVING puzzle using: {model}")
+    vprint(verbose, "*" * 50)
+    vprint(verbose, f"SOLVING puzzle using: {model}")
 
     unsolved_count = len(puzzle["words"])
     clue_metadata, solution = return_clue_metadata(puzzle)
     guessed = True
-    api_retry_count = 5
+    api_retry_count = 3
     solved_state = {"words": []}
     while unsolved_count and api_retry_count > 0:
         guessed, clue_metadata, solved_state, solved_word = solve_puzzle_clue(
-            llm, grid_size, clue_metadata, solved_state, queue
+            llm, grid_size, clue_metadata, solved_state, verbose
         )
 
         if guessed:
             unsolved_count -= 1
             api_retry_count = 3
-            queue.put(f"SUCCESS: new word guessed is {solved_word}")
-            queue.put(f"Remaining unsolved count: {unsolved_count}")
-            queue.put("*" * 50)
+            vprint(verbose, f"SUCCESS: new word guessed is {solved_word}")
+            vprint(verbose, f"Remaining unsolved count: {unsolved_count}")
+            vprint(verbose, "*" * 50)
         else:
-            queue.put("FAILED: calling API to guess word again")
-            queue.put("*" * 50)
+            vprint(verbose, "FAILED: calling API to guess word again")
+            vprint(verbose, "*" * 50)
             api_retry_count -= 1
 
-    queue.put(json.dumps(solved_state, indent=4))
-    queue.put(f"Final Solved Word Count: {len(solved_state['words'])}")
+    vprint(verbose, json.dumps(solved_state, indent=4))
+    vprint(verbose, f"Final Solved Word Count: {len(solved_state['words'])}")
 
     grid_data, _ = get_character_positions_and_words(solved_state, grid_size)
     positions = {}
     for d in grid_data:
         positions[f"{d['row']},{d['column']}"] = d["character"]
 
-    queue.put("\nCROSSWORD -")
+    vprint(verbose, "\nCROSSWORD -")
     c_s = ""
     for i in range(grid_size):
         for j in range(grid_size):
@@ -129,7 +128,7 @@ def solve(llm, model, grid_size, puzzle, queue):
             else:
                 c_s += "_ "
         c_s += "\n"
-    queue.put(c_s)
+    vprint(verbose, c_s)
 
     response = {"solved": [], "unsolved": []}
 
@@ -140,14 +139,16 @@ def solve(llm, model, grid_size, puzzle, queue):
     for word_d in solved_state["words"]:
         metadata_tup = (word_d["row"], word_d["column"], word_d["isAcross"])
         if (
-                metadata_tup in solution
-                and solution[metadata_tup] == word_d["word"].lower()
-                and word_d["word"] not in seen
+            metadata_tup in solution
+            and solution[metadata_tup] == word_d["word"].lower()
+            and word_d["word"] not in seen
         ):
             seen[word_d["word"]] = True
             correct_count += 1
             response["solved"].append(word_d["word"])
-    queue.put(f"\nCorrect - {correct_count}/{len(puzzle['words'])}")
+    vprint(
+        verbose, f"\n{model} Solve Percentage - {correct_count}/{len(puzzle['words'])}"
+    )
 
     for word in solution.keys():
         if solution[word] not in response["solved"]:
