@@ -309,7 +309,7 @@ if __name__ == "__main__":
         "--word_count",
         type=int,
         default=10,
-        help="Number of words to generate (minimum 10).",
+        help="Number of words to generate.",
     )
     parser.add_argument(
         "--difficulty",
@@ -324,7 +324,7 @@ if __name__ == "__main__":
         help="Number of times the crossword should be revised",
     )
     parser.add_argument(
-        "--verbose", action="store_true", help="Enable verbose output for solver"
+        "--verbose", action="store_true", help="Enable verbose output for SolverLLMs"
     )
 
     args = parser.parse_args()
