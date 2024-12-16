@@ -160,6 +160,33 @@ def get_word_perc(crossword, solver_responses):
     return perc
 
 
+def get_solver_configs(model_name):
+    return solver_configs[model_name]
+
+
+def get_puzzle_acc(crossword, solver_responses, model, difficulty):
+    avg = 0
+    """
+    solver1: 80%
+    solver2: 60%
+    solver3: 20%
+    overall puzzle acc: 160/3 = 53%
+    """
+
+    # build stats at word level
+    for response in solver_responses:
+        # avg number of words solved
+        s_count = len(response["solved"])
+        acc = s_count / len(crossword["words"])
+        avg += acc
+
+    avg = avg / len(solver_responses)
+
+    print(f"GEN_MODEL: {model}, DIFFICULTY: {difficulty}, OVERALL PUZZLE ACCURACY: {avg}")
+
+    return avg
+
+
 def determine_clue_updates_needed(crossword, solve_perc, desired_difficulty):
     update_clue = {}
 
@@ -178,17 +205,17 @@ def determine_clue_updates_needed(crossword, solve_perc, desired_difficulty):
             medium_acc_words.append(word)
 
     if desired_difficulty == Difficulty.EASY.value and len(
-        high_acc_words
+            high_acc_words
     ) >= 0.75 * len(words):
         return update_clue
 
     if desired_difficulty == Difficulty.HARD.value and len(low_acc_words) > 0.5 * len(
-        words
+            words
     ):
         return update_clue
 
     if desired_difficulty == Difficulty.MEDIUM.value and 0.5 * len(words) <= len(
-        medium_acc_words
+            medium_acc_words
     ) < 0.75 * len(words):
         return update_clue
 
@@ -238,7 +265,7 @@ def solve_wrapper(config, grid_size, output_file, queue):
     return response
 
 
-def generate_crossword(llm, grid_size, word_count, desired_difficulty, iterations):
+def generate_crossword(llm, grid_size, word_count, desired_difficulty, iterations, model_name):
     crossword, output_file = generate(llm, grid_size, word_count, desired_difficulty)
 
     # remove this - here for testing
@@ -264,17 +291,21 @@ def generate_crossword(llm, grid_size, word_count, desired_difficulty, iteration
                     output_file=output_file,
                     queue=log_queue,
                 )
-                responses = pool.map(solve_func, solver_configs)
+                sc = get_solver_configs(model_name)
+                responses = pool.map(solve_func, sc)
 
             # Collect and print logs sequentially
             while not log_queue.empty():
                 print(log_queue.get())
 
         # get metrics and update clues
-        solve_perc = get_word_perc(crossword, responses)
-        update_clue = determine_clue_updates_needed(
-            crossword, solve_perc, desired_difficulty
-        )
+        # solve_perc = get_word_perc(crossword, responses)
+        solve_acc = get_puzzle_acc(crossword, responses, model_name, desired_difficulty)
+        # update_clue = determine_clue_updates_needed(
+        #     crossword, solve_perc, desired_difficulty
+        # )
+
+        update_clue = {}
 
         if update_clue:
             # filter out all the words that need a clue update
@@ -282,7 +313,7 @@ def generate_crossword(llm, grid_size, word_count, desired_difficulty, iteration
             print(f"CLUE UPDATES NEEDED FOR: {clue_update_words}")
 
             # update the clues for needed words
-            update_crossword(llm, crossword, clue_update_words, desired_difficulty)
+            # update_crossword(llm, crossword, clue_update_words, desired_difficulty)
 
         output_file = f"output/crossword-{iteration}.json"
         write_file(crossword, iteration)
@@ -296,12 +327,6 @@ def generate_crossword(llm, grid_size, word_count, desired_difficulty, iteration
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Crossword Puzzle Generator")
-    parser.add_argument(
-        "--gen_model",
-        choices=["claude", "gpt", "llama", "mistral"],
-        default="gpt",
-        help="Choose the model to use for generating the crossword puzzle",
-    )
     parser.add_argument(
         "--grid_size",
         type=int,
@@ -332,11 +357,6 @@ if __name__ == "__main__":
     if args.grid_size < 10:
         parser.error("grid_size must be at least 10.")
 
-    print(
-        f"GENERATING crossword using: {args.gen_model}, grid size: {args.grid_size}, word count: {args.word_count}, "
-        f"difficulty: {args.difficulty}"
-    )
-
     generator_config = {
         "temperature": 1,
         "max_tokens": 4096,
@@ -344,20 +364,22 @@ if __name__ == "__main__":
         "max_retries": 4,
     }
 
-    model = "gpt-4o"
-    if args.gen_model == "claude":
-        model = "claude-3-5-sonnet-latest"
-    elif args.gen_model == "llama":
-        model = "llama-3.3-70b-versatile"
-    elif args.gen_model == "mistral":
-        model = "mistral"
+    models = ["gpt-4o", "claude-3-5-sonnet-latest"]
 
-    generator_config["model"] = model
+    diff_levels = ["easy", "medium", "hard"]
 
-    generate_crossword(
-        get_llm(generator_config),
-        args.grid_size,
-        args.word_count,
-        args.difficulty,
-        args.iterations,
-    )
+    for model in models:
+        for d in diff_levels:
+            print(
+                f"GENERATING crossword using: {model}, grid size: {args.grid_size}, word count: {args.word_count}, "
+                f"difficulty: {d}"
+            )
+            generator_config["model"] = model
+            generate_crossword(
+                get_llm(generator_config),
+                15,
+                1,
+                d,
+                1,
+                model
+            )
