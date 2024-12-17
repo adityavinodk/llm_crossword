@@ -240,8 +240,31 @@ def solve_wrapper(config, grid_size, output_file, verbose):
     return response
 
 
+def print_puzzle_acc(crossword, solver_responses, model, difficulty):
+    avg = 0
+    """
+    solver1: 80%
+    solver2: 60%
+    solver3: 20%
+    overall puzzle acc: 160/3 = 53%
+    """
+
+    # build stats at word level
+    for response in solver_responses:
+        # avg number of words solved
+        s_count = len(response["solved"])
+        acc = s_count / len(crossword["words"])
+        avg += acc
+
+    avg = avg / len(solver_responses)
+
+    print(
+        f"\nGEN_MODEL: {model}, DIFFICULTY: {difficulty}, OVERALL PUZZLE ACCURACY: {avg}"
+    )
+
+
 def generate_crossword(
-    llm, grid_size, word_count, desired_difficulty, iterations, verbose
+    llm, grid_size, word_count, desired_difficulty, iterations, verbose, model
 ):
     crossword, output_file = generate(llm, grid_size, word_count, desired_difficulty)
 
@@ -268,6 +291,7 @@ def generate_crossword(
             responses = list(pool.imap_unordered(solve_func, solver_configs))
 
         # get metrics and update clues
+        print_puzzle_acc(crossword, responses, model, desired_difficulty)
         solve_perc = get_word_perc(crossword, responses)
         update_clue = determine_clue_updates_needed(
             crossword, solve_perc, desired_difficulty
@@ -361,4 +385,5 @@ if __name__ == "__main__":
         args.difficulty,
         args.iterations,
         args.verbose,
+        model
     )
